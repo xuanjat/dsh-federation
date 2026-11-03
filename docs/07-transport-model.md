@@ -13,6 +13,24 @@
 
 **定义 1（语义级传输）**：一次交付 d = (a, p, r)，a 为言语行为头部（performative + 身份四坐标 + 单调时间戳），p 为内容寻址指针（路径 + sha256 + 字节数），r 为可选内联正文（|r| ≤ 2KB 阈值）。载荷本体 P 不经信道。
 
+**图 1 · 一次交付的时序（sequence）**
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant A as 发送方 DSH（任意机/任意岗）
+    participant C as 共享上下文数据库
+    participant B as 接收方 DSH
+    A->>A: 打包载荷，逐文件计算 sha256
+    A->>C: 载荷经既有通道落库（不经上下文）
+    A->>C: append data 消息：头部（身份四坐标+单调时间戳）+ 指针（路径+sha256+字节数）
+    B->>C: 周期值守：查游标，按时间戳 O(1) 判新
+    B->>C: 按指针取载荷（上下文之外）
+    B->>B: shell 内逐文件 sha256 校验，仅 digest 行回流上下文
+    B->>C: append ack 回执（一行）
+    Note over A,B: 单次交付上下文成本 = O(头部+指针+ack)，与载荷大小无关
+```
+
 ## 2 机制—学术谱系对照
 
 | # | dsh-federation 机制 | 学术谱系 | 关键文献 |

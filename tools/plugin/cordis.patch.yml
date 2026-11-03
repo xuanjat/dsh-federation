@@ -1,0 +1,9 @@
+# dsh-federation-tools bundle patch (Host-only, no dependencies).
+- insert:
+    - id: fed-tools
+      name: 'dsh-federation-tools'
+      config:
+        roomRoot: ''
+        payloadRoot: ''
+        machine: ''
+        role: ''

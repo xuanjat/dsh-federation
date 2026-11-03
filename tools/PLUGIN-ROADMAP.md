@@ -3,6 +3,10 @@
 > Phase B（本仓库当前内容）先立协议与文档；Phase A 把协议中可工具化的部分做成 DSH 插件。
 > DSH（[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)，"Everything is a Plugin"）支持 host-only 插件包（bundle）安装。
 
+## 状态（2026-11-03）
+
+**MVP 源码已落地：[plugin/](plugin/)**（host-only cordis bundle，零依赖，五工具齐备：fed_room_scan / fed_room_post / fed_cursor / fed_handoff_verify / fed_ack_board；含中英 locale 与吉祥物 icon；逻辑冒烟测试通过，待真实 profile 安装验证）。下表保留为设计基线。
+
 ## 定位与边界
 
 - 内置 Agent Teams（`spawn_teammate` 等 9 工具）解决**单机**多 agent 协作；本插件解决**跨机联邦**的日常操作。

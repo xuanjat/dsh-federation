@@ -1,4 +1,7 @@
-# dsh-federation
+<h1 align="center">
+  <img src="assets/logo.svg" alt="dsh-federation 吉祥物：Q版小鱼娘" width="128" height="128"><br/>
+  dsh-federation
+</h1>
 
 > **跨机 DSH 多智能体联邦协作方法框架**
 > **面向跨机异构多智能体的语义级协调/传输平面**：传*意图与引用*，不传载荷 —— 高效、低成本、异构、可审计。
@@ -26,6 +29,33 @@
 3. **岗位体系**（[docs/02-roles.md](docs/02-roles.md)）—— 外交官（统一对外发声）、机械师（运维）、主编（手册治理）、协调员等；一机可多岗，游标分账。
 4. **版本化治理手册**（[docs/03-governance.md](docs/03-governance.md)）—— 四卷手册（总则红线/跨机经验/事故档案/协作分发），主编制度、ack 追踪、每周汇总；红线条目全部由真实事故反推而来。
 5. **交付协议与值守节律**（[spec/handoff-manifest.md](spec/handoff-manifest.md)、[docs/04-watchkeeping.md](docs/04-watchkeeping.md)）—— 文件交付只走既有通道、通知只给指针；turn-driven 会话靠 schedule 定时提醒按节律"值班"。
+
+## 框架总览图
+
+```mermaid
+flowchart TB
+    subgraph NODES["异构节点 —— 彼此零端口开放 · 独立 DSH 实例 · 异构运行时"]
+        direction LR
+        N1["🖥️ Windows 工作站<br/>外交官 + 机械师"]
+        N2["☁️ 云端服务器<br/>主编 + 外交官"]
+        N3["🏠 局域网 / 宿舍机<br/>协调员 + 多岗"]
+        N4["🔌 无外网机<br/>人工中继接入"]
+    end
+
+    subgraph STORE["共享上下文数据库（如 OpenViking）—— 联邦唯一底座（本方案的架构选择）"]
+        subgraph SEM["语义层：穿越上下文，成本 O(头部 + 指针)"]
+            ROOM["房间 room/<br/>general.md append-only 频道<br/>inbox/机器.md 收件箱<br/>cursor/机器-岗位.md 游标"]
+            GOV["治理手册（四卷）<br/>总则红线 · 跨机经验<br/>事故档案 · 协作分发<br/>主编制 · ack 追踪"]
+            WATCH["值守节律<br/>schedule 驱动：白天 1h / 夜间 2h<br/>turn-based 非阻塞轮询"]
+        end
+        PAY["载荷层：恒在上下文之外<br/>文件 / 图件 / 千文件级交付<br/>仅以 路径+sha256+字节数 指针被引用"]
+    end
+
+    NODES <-->|"读写 UTF-8 文本<br/>ssh 隧道 · 本地挂载 · 人工中继"| ROOM
+    ROOM <-->|"data 消息 = 头部 + 指针<br/>上下文外 sha256 校验，仅一行 digest 回流"| PAY
+```
+
+> 读图：穿越上下文窗口的只有**语义层**（消息头部、指针、治理文本）；**载荷层**恒留在上下文之外。交付的逐步时序见 [docs/07-transport-model.md](docs/07-transport-model.md) 图 1。
 
 ## 传输模型：传意图与引用，不传载荷
 
@@ -61,7 +91,9 @@ dsh-federation/
 ├── templates/                   AGENTS.md / HANDBOOK.md / 房间初始化 / 红线清单模板
 ├── reference/                   handbook.mjs 参考工具（生产环境在用）
 ├── case-study/                  11 天 / 5 台机器的脱敏运行案例
-└── tools/                       Phase A 插件路线图（dsh 插件：跨机联邦客户端）
+├── assets/                      框架图标：Q版小鱼娘（原创 SVG）
+├── paper/                       投稿级短文草稿（英文，含形式化定义与参考文献）
+└── tools/                       Phase A 插件：PLUGIN-ROADMAP + plugin/ 可安装 bundle 源码
 ```
 
 ## 快速开始（30 分钟接入一台机器）
@@ -90,7 +122,7 @@ dsh-federation/
 ## 路线图
 
 - **v0.1（当前）**：方法框架（spec/docs/templates）+ 参考工具 + 脱敏案例
-- **v0.2（计划）**：DSH 插件（fed_room_scan / fed_room_post / fed_cursor / fed_handoff_verify / fed_ack_board）→ [tools/PLUGIN-ROADMAP.md](tools/PLUGIN-ROADMAP.md)
+- **v0.2（源码已落地，待安装验证）**：DSH 插件 bundle（fed_room_scan / fed_room_post / fed_cursor / fed_handoff_verify / fed_ack_board，零依赖+逻辑冒烟测试通过）→ [tools/plugin/](tools/plugin/)；投稿级短文草稿 → [paper/](paper/)
 - **v0.3+**：英文全量文档、更多环境的接入记录、协议 v2（服务端去重与权限隔离探索）
 
 ## 许可与声明

@@ -1,4 +1,7 @@
-# dsh-federation
+<h1 align="center">
+  <img src="assets/logo.svg" alt="dsh-federation mascot: chibi fish-girl" width="128" height="128"><br/>
+  dsh-federation
+</h1>
 
 > **A method framework for federating multiple DSH agent instances across machines**
 > **A semantic-level coordination & transport plane for heterogeneous, cross-machine LLM-agent federations**: it moves *intent and references*, not payloads — efficient, cheap, runtime-agnostic, auditable.
@@ -21,6 +24,33 @@ One person (or a small team) runs an AI agent instance on each of several machin
 3. **A role system** ([docs/02-roles.md](docs/02-roles.md)) — per-machine diplomat (single outbound voice), mechanic, editor, coordinator, and more; one machine may hold several roles, each with its own cursor.
 4. **Versioned governance** ([docs/03-governance.md](docs/03-governance.md)) — a four-volume handbook (red lines / cross-machine lessons / incident archive / collaboration dispatch) with an editor-in-chief, acknowledgment tracking, and weekly digests. Every red line traces back to a real incident.
 5. **Delivery discipline + watch cadence** — files move only over pre-established channels announced as pointers ([spec/handoff-manifest.md](spec/handoff-manifest.md)); turn-based sessions keep watch on a schedule (hourly by day, every 2h at night) via reminder-driven wakeups ([docs/04-watchkeeping.md](docs/04-watchkeeping.md)).
+
+## Framework at a glance
+
+```mermaid
+flowchart TB
+    subgraph NODES["Heterogeneous nodes — zero open ports between them · independent DSH instances · mixed runtimes"]
+        direction LR
+        N1["🖥️ Windows workstation<br/>diplomat + mechanic"]
+        N2["☁️ Cloud server<br/>editor-in-chief + diplomat"]
+        N3["🏠 LAN / dorm machine<br/>coordinator + roles"]
+        N4["🔌 Offline box<br/>joins via human relay"]
+    end
+
+    subgraph STORE["Shared context database (e.g. OpenViking) — the federation's only substrate (an architectural choice of this method)"]
+        subgraph SEM["Semantic layer: crosses context, cost O(header + pointer)"]
+            ROOM["Room<br/>general.md append-only channel<br/>inbox/machine.md inboxes<br/>cursor/machine-role.md cursors"]
+            GOV["Governance handbook (4 vols)<br/>red lines · cross-machine lessons<br/>incident archive · dispatch<br/>editor-in-chief · ack tracking"]
+            WATCH["Watch cadence<br/>schedule-driven: hourly by day / 2h by night<br/>turn-based, non-blocking polling"]
+        end
+        PAY["Payload layer: never enters context<br/>files / artifacts / 1000-file deliveries<br/>referenced only as path + sha256 + bytes pointers"]
+    end
+
+    NODES <-->|"read/write UTF-8 text<br/>ssh tunnel · local mount · human relay"| ROOM
+    ROOM <-->|"data message = header + pointer<br/>out-of-context sha256 check; one digest line returns"| PAY
+```
+
+> How to read it: only the **semantic layer** (message headers, pointers, governance text) crosses the context window; the **payload layer** stays outside context at all times. The step-by-step delivery sequence is Figure 1 in [docs/07-transport-model.md](docs/07-transport-model.md).
 
 ## Transport model: intent and references, not payloads
 
@@ -55,7 +85,9 @@ docs/research novelty assessment: comparison matrix, claim ladder, adversarial r
 templates/    AGENTS.md / HANDBOOK.md / room init / red-line list templates
 reference/    handbook.mjs — the tool used in production on the author's workstation
 case-study/   a sanitized 11-day, 5-machine real deployment
-tools/        Phase-A roadmap: a DSH plugin (cross-machine federation client)
+assets/       framework icon: a chibi fish-girl mascot (original SVG)
+paper/        submission-grade short-paper draft (English; formal definitions + references)
+tools/        Phase-A plugin: PLUGIN-ROADMAP + plugin/ installable bundle source
 ```
 
 Quick start: [docs/05-onboarding.md](docs/05-onboarding.md) (a new machine joins in ~30 minutes).
@@ -76,7 +108,7 @@ Per our search (2026-11): every individual mechanism has prior art; the nearest 
 ## Roadmap
 
 - **v0.1 (current)** — method framework (spec/docs/templates) + reference tool + sanitized case study
-- **v0.2 (planned)** — a DSH plugin: `fed_room_scan`, `fed_room_post`, `fed_cursor_*`, `fed_handoff_verify`, `fed_ack_board` ([tools/PLUGIN-ROADMAP.md](tools/PLUGIN-ROADMAP.md))
+- **v0.2 (source landed, pending install validation)** — a DSH plugin bundle (`fed_room_scan`, `fed_room_post`, `fed_cursor`, `fed_handoff_verify`, `fed_ack_board`; zero-dependency, logic smoke-tested) → [tools/plugin/](tools/plugin/); submission-grade short-paper draft → [paper/](paper/)
 - **v0.3+** — full English docs, more onboarding records, protocol v2 explorations (server-side dedup, permission isolation)
 
 ## License & disclaimers
