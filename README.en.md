@@ -1,6 +1,7 @@
 # dsh-federation
 
 > **A method framework for federating multiple DSH agent instances across machines**
+> **A semantic-level coordination & transport plane for heterogeneous, cross-machine LLM-agent federations**: it moves *intent and references*, not payloads — efficient, cheap, runtime-agnostic, auditable.
 > Cross-machine collaboration built entirely on a shared context database — room
 > protocol, role system, versioned governance handbook, delivery discipline, and
 > watch cadence for turn-based agents.
@@ -21,11 +22,35 @@ One person (or a small team) runs an AI agent instance on each of several machin
 4. **Versioned governance** ([docs/03-governance.md](docs/03-governance.md)) — a four-volume handbook (red lines / cross-machine lessons / incident archive / collaboration dispatch) with an editor-in-chief, acknowledgment tracking, and weekly digests. Every red line traces back to a real incident.
 5. **Delivery discipline + watch cadence** — files move only over pre-established channels announced as pointers ([spec/handoff-manifest.md](spec/handoff-manifest.md)); turn-based sessions keep watch on a schedule (hourly by day, every 2h at night) via reminder-driven wakeups ([docs/04-watchkeeping.md](docs/04-watchkeeping.md)).
 
+## Transport model: intent and references, not payloads
+
+In an agent federation the scarce resource is not bandwidth but the **context window** (long contexts degrade attention and are billed per token). dsh-federation therefore designs transport at the semantic layer:
+
+- **Semantic messages**: exactly five speech acts — ask / reply / note / data / ack (lineage: speech-act theory → KQML → FIPA-ACL) — carrying intent, a four-coordinate identity, and a monotonic timestamp;
+- **References instead of payloads**: anything >2KB becomes a pointer (path + sha256 + bytes); the payload stays in the shared store and **never enters any agent's context** — per-delivery context cost is O(header) ≈ hundreds of bytes, independent of payload size;
+- **Out-of-context verification**: per-file sha256 comparison runs in the shell (lineage: content addressing, Merkle/IPFS; provenance, W3C PROV); only a digest/boolean line re-enters context;
+- **O(1) novelty check + cursor-based incremental consumption**: append-only log with per-role cursors (isomorphic to Kafka consumer offsets); detecting new messages is one timestamp comparison, never a full rescan;
+- **Heterogeneity with zero adaptation**: the only interface is "read/write UTF-8 text over any transport" (ssh tunnel / local / human relay) — independent of runtime, model, OS, or network topology; even offline machines join via relay;
+- **Time-triggered watchkeeping**: turn-based agents cannot block, so watch cadence follows the time-triggered architecture (Kopetz, 1991): hourly by day, 2-hourly by night.
+
+| Dimension | Message queue (Kafka-class) | HTTP RPC (A2A-class) | Email/IM | **dsh-federation** |
+|---|---|---|---|---|
+| Extra infrastructure | broker cluster | service + open ports + client libs | third-party platform accounts | **0** (reuses one shared context DB) |
+| Context cost per delivery | O(payload) | O(payload) | O(payload) | **O(header + pointer)** |
+| 1000-file delivery | attachments/base64 in context | bodies in context | attachments | **pointers + out-of-context sha256** |
+| Heterogeneous runtime onboarding | client lib/SDK | protocol stack | account + formats | **literacy in UTF-8 text** |
+| Offline node | ❌ | ❌ | ❌ | ✅ relay / outbound tunnel |
+| Audit & provenance | component-dependent | DIY | platform black box | **append-only + sha256, provenance by construction** |
+| Organizational governance | none | none | none | **versioned handbook + red lines + ack** |
+
+Full mechanism→literature lineage, the formal cost model, and an alignment table against the MAST failure taxonomy of LLM multi-agent systems: [docs/07-transport-model.md](docs/07-transport-model.md).
+
 ## Repository layout
 
 ```
 spec/         room protocol, handoff manifest (normative)
-docs/         architecture, roles, governance, watchkeeping, onboarding, lessons
+docs/         architecture, roles, governance, watchkeeping, onboarding, lessons,
+              transport model (mechanism-literature lineage + cost model)
 docs/research novelty assessment: comparison matrix, claim ladder, adversarial review
 templates/    AGENTS.md / HANDBOOK.md / room init / red-line list templates
 reference/    handbook.mjs — the tool used in production on the author's workstation

@@ -1,6 +1,8 @@
 # dsh-federation
 
 > **跨机 DSH 多智能体联邦协作方法框架**
+> **面向跨机异构多智能体的语义级协调/传输平面**：传*意图与引用*，不传载荷 —— 高效、低成本、异构、可审计。
+> A semantic-level coordination & transport plane for heterogeneous, cross-machine LLM-agent federations: it moves *intent and references*, not payloads.
 > Federated collaboration for multiple DeepSeek Harness (DSH) agent instances —
 > built entirely on a shared context database, with a room protocol, role system,
 > versioned governance handbook, delivery discipline, and watch cadence.
@@ -25,13 +27,36 @@
 4. **版本化治理手册**（[docs/03-governance.md](docs/03-governance.md)）—— 四卷手册（总则红线/跨机经验/事故档案/协作分发），主编制度、ack 追踪、每周汇总；红线条目全部由真实事故反推而来。
 5. **交付协议与值守节律**（[spec/handoff-manifest.md](spec/handoff-manifest.md)、[docs/04-watchkeeping.md](docs/04-watchkeeping.md)）—— 文件交付只走既有通道、通知只给指针；turn-driven 会话靠 schedule 定时提醒按节律"值班"。
 
+## 传输模型：传意图与引用，不传载荷
+
+agent 联邦的稀缺资源不是带宽，而是**上下文窗口**（长上下文有注意力退化与按 token 计费的双重代价）。因此本框架把"传输"设计在语义层：
+
+- **语义消息**：仅五种言语行为 ask / reply / note / data / ack（谱系：言语行为理论 → KQML → FIPA-ACL），携带意图、身份四坐标与单调时间戳；
+- **引用代替载荷**：>2KB 一律化为"路径 + sha256 + 字节数"指针；载荷留在共享库、**零入上下文** —— 单次交付的上下文成本 O(头部)≈百字节，与载荷大小无关；
+- **上下文外校验**：sha256 逐文件比对在 shell 完成（谱系：内容寻址 Merkle/IPFS、溯源 W3C PROV），回流上下文的仅一行 digest/布尔；
+- **O(1) 判新 + 游标增量消费**：append-only 日志 + 每岗位游标（与 Kafka consumer offset 同构），判新只比一次时间戳，不全量重扫；
+- **异构零适配**：接入接口 = "经任意传输读写 UTF-8 文本"（ssh 隧道 / 本地 / 人工中继），与运行时、模型、OS、网络形态无关；无外网机经中继入联邦；
+- **时间触发值守**：turn-based agent 不能阻塞等待，按 time-triggered 架构（Kopetz 1991）定值守节律（白天 1h / 夜间 2h）。
+
+| 维度 | 消息队列（Kafka 类） | HTTP RPC（A2A 类） | 邮件/IM | **dsh-federation** |
+|---|---|---|---|---|
+| 额外基础设施 | broker 集群 | 服务+开端口+客户端库 | 第三方平台账号 | **0**（复用共享上下文库） |
+| 单次交付上下文成本 | O(载荷) | O(载荷) | O(载荷) | **O(头部+指针)** |
+| 千文件级交付 | 附件/base64 进上下文 | 消息体进上下文 | 附件 | **指针 + 上下文外 sha256** |
+| 异构运行时接入 | 客户端库/SDK | 协议栈 | 账号+格式 | **会读写文本即可** |
+| 无外网节点 | ❌ | ❌ | ❌ | ✅ 中继/出站隧道 |
+| 审计与溯源 | 依赖组件 | 自建 | 平台黑箱 | **append-only + sha256 天然溯源** |
+| 组织治理 | 无 | 无 | 无 | **版本化手册+红线+ack** |
+
+机制—学术谱系—成本模型的完整推导见 [docs/07-transport-model.md](docs/07-transport-model.md)（含与 LLM-MAS 失败 taxonomy MAST 的对位）。
+
 ## 仓库结构
 
 ```
 dsh-federation/
 ├── README.md / README.en.md     你在这里
 ├── spec/                        房间协议、交付协议（机器可依循的规范）
-├── docs/                        架构 / 岗位 / 治理 / 值守 / 接入 / 教训
+├── docs/                        架构 / 岗位 / 治理 / 值守 / 接入 / 教训 / 传输模型(学术谱系+成本模型)
 │   └── research/                新颖性评估：对标矩阵、主张阶梯、反方审查、检索日志
 ├── templates/                   AGENTS.md / HANDBOOK.md / 房间初始化 / 红线清单模板
 ├── reference/                   handbook.mjs 参考工具（生产环境在用）
