@@ -28,7 +28,7 @@ plugin_manager({ action: "install_bundle", target: "<本目录绝对路径>" })
 | `payloadRoot` | 校验相对路径时的载荷根（默认=roomRoot） | 共享库载荷目录 |
 | `machine` / `role` | 本机化名 / 本会话岗位（进 mid 与游标文件名） | `mixian` / `diplomat` |
 
-显示元数据见 `locale/zh.json`、`locale/en.json`；图标 `icon.svg` 为本框架吉祥物（Q 版小鱼娘，原创 SVG，MIT/CC BY 4.0 同仓库）。
+显示元数据见 `locale/zh.json`、`locale/en.json`；图标 `icon.svg` 为本框架图标（简笔彩色歌姬像，原创 SVG，风格致敬公开角色设定，MIT/CC BY 4.0 同仓库）。
 
 ## 开发与验证状态
 

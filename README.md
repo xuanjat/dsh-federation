@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="assets/logo.svg" alt="dsh-federation 吉祥物：Q版小鱼娘" width="128" height="128"><br/>
+  <img src="assets/logo.svg" alt="dsh-federation 图标：简笔彩色歌姬像（沃雅妮莎风同人原创）" width="128" height="128"><br/>
   dsh-federation
 </h1>
 
@@ -91,7 +91,7 @@ dsh-federation/
 ├── templates/                   AGENTS.md / HANDBOOK.md / 房间初始化 / 红线清单模板
 ├── reference/                   handbook.mjs 参考工具（生产环境在用）
 ├── case-study/                  11 天 / 5 台机器的脱敏运行案例
-├── assets/                      框架图标：Q版小鱼娘（原创 SVG）
+├── assets/                      框架图标：简笔彩色歌姬像（原创 SVG，风格致敬公开角色设定）
 ├── paper/                       投稿级短文草稿（英文，含形式化定义与参考文献）
 └── tools/                       Phase A 插件：PLUGIN-ROADMAP + plugin/ 可安装 bundle 源码
 ```

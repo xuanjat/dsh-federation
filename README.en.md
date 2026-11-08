@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="assets/logo.svg" alt="dsh-federation mascot: chibi fish-girl" width="128" height="128"><br/>
+  <img src="assets/logo.svg" alt="dsh-federation icon: simple-line colored diva portrait (original fan-style art)" width="128" height="128"><br/>
   dsh-federation
 </h1>
 
@@ -85,7 +85,7 @@ docs/research novelty assessment: comparison matrix, claim ladder, adversarial r
 templates/    AGENTS.md / HANDBOOK.md / room init / red-line list templates
 reference/    handbook.mjs — the tool used in production on the author's workstation
 case-study/   a sanitized 11-day, 5-machine real deployment
-assets/       framework icon: a chibi fish-girl mascot (original SVG)
+assets/       framework icon: simple-line colored diva portrait (original SVG, fan-style homage)
 paper/        submission-grade short-paper draft (English; formal definitions + references)
 tools/        Phase-A plugin: PLUGIN-ROADMAP + plugin/ installable bundle source
 ```
