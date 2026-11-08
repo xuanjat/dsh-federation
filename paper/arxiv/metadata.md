@@ -10,7 +10,7 @@
 | Title | dsh-federation: A Semantic-Level Coordination and Transport Plane for Heterogeneous Cross-Machine LLM-Agent Federations |
 | Authors | 【拍板】当前TeX内为 Lifeng Tian（arXiv要求真名，不接受化名；单位建议 Independent Researcher 或 China University of Geosciences (Wuhan)，二者选一；可加ORCID） |
 | Abstract | 见 abstract.txt（纯文本，无TeX命令） |
-| Comments | 7 pages, 31 references; field study sanitized |
+| Comments | 8 pages, 31 references; field study sanitized |
 | ACM class | I.2.11（可选） |
 | Journal ref / DOI / Report number | 无 |
 
