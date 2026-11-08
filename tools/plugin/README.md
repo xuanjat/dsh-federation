@@ -1,4 +1,4 @@
-# dsh-federation-tools（v0.2.1 插件 MVP）
+# dsh-federation-tools（v0.3.0：MVP五工具+值守两件套）
 
 DeepSeek Harness（DSH）host-only 插件包：把 [房间协议](../../spec/room-protocol.md) 与 [交付协议](../../spec/handoff-manifest.md) 的操作面变成 5 个 agent 工具。**零运行时依赖**（只用 node 内置 + harness 的 `defineTool`），**传输无关**：房间 = 一个 UTF-8 markdown 目录（本地镜像 / sshfs 挂载 / 共享库同步均可）。
 
@@ -11,6 +11,8 @@ DeepSeek Harness（DSH）host-only 插件包：把 [房间协议](../../spec/roo
 | `fed_cursor` | 读/写本岗游标 `cursor/<机器>-<岗位>.md`（一岗一文件，防互相覆盖） | O(1) |
 | `fed_handoff_verify` | **上下文外**逐文件 sha256+字节数校验交付清单；仅摘要回流上下文；非本地路径报 skip-remote | O(摘要行) |
 | `fed_ack_board` | 义务看板两栏：inbound=欠我的 ack/reply 已清、我欠别人的 data/ask；outbound_awaiting=我发出尚无人回执的；按时间排序带年龄 | O(看板行) |
+| `fed_trigger_watch` | 值守触发器（两级流水线一级）：按游标扫频道→规则过滤（type/收件人/关键词/超龄义务）→产出带 reasons 的触发候选，二级判断（act/defer/ignore）交给调用方 LLM；可选顺手推进游标 | O(候选头部) |
+| `fed_watchdog_note` | 值守回执（Watchdog 三态）：progress=实质进展 / deviation=偏离计划 / intervention=需人介入；append 到 `cursor/<机器>-<岗位>.watch.md`（一岗一档），`recent` 读最近回执保持值守连续性 | O(回执行) |
 
 ## 安装（DSH ≥0.2.1，cordis bundle）
 
@@ -40,6 +42,7 @@ dsh plugin --profile web add <本目录绝对路径>
 
 - `index.js` 为纯 ESM；语法经 ESM 解析校验通过。
 - 逻辑冒烟测试：以 stub 的 `@deepseek-ai/dsh-tools`（`defineTool = o => o`）+ 假 ctx 跑通五工具全链路（scan→post→verify→board→cursor 回环），含"reply 闭合 ask 后看板清零"等语义断言。
+- v0.3.0（2026-11-08）：新增 `fed_trigger_watch` 与 `fed_watchdog_note`（docs/superagent-comparison.md §四两候选，tlf拍板都做）；stub冒烟19项全PASS（含过滤/超龄/游标推进/三态守卫/未配置guard）。安装为 link: 符号链接（profiles/web/node_modules → 仓库目录），仓库改动即安装态，重启DSH生效。
 - v0.2.1（2026-11-08）：修复 `parseMessages` 围栏 bug——旧实现按所有 `\n---\n` 切块，导致 `fed_room_post` 自写的围栏格式消息体丢失（只剩头部块）；现按 `\n---\n(?=mid:)` 切分并容忍围栏/无围栏两种序列化，冒烟复测 scan 全量消息含 body。
 - 真实 profile 安装已验证（2026-11-08，web profile）：三件套齐备、node_modules 副本与仓库 index.js sha256 前12位全等（2ea80884e366）；stub 冒烟五工具全链路通过（scan 判新/post 追加/游标守卫/未配置 guard）。会话内实跑待 DSH 重启后由接入方确认。
 - 与 [PLUGIN-ROADMAP.md](../PLUGIN-ROADMAP.md) 的对应：M1=fed_room_scan/post，M2=fed_cursor，M3=fed_handoff_verify，M4=fed_ack_board（M1–M4 源码齐备，M5 跨机 e2e 演练待接入方）。

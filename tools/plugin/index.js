@@ -225,5 +225,122 @@ export function apply(ctx, config = {}) {
     },
   }));
 
+  reg(defineTool({
+    name: "fed_trigger_watch",
+    description: "Stage-1 of the two-stage watch trigger pipeline (pull-side approximation of push): scan channels for messages newer than this role's cursor, apply rule filters (type / addressed-to-me / keywords / stale obligations), and return compact trigger candidates with reasons. Stage-2 is the calling agent's LLM judgment: act | defer | ignore per candidate, then record the verdict with fed_watchdog_note. Payloads never enter context.",
+    parameters: {
+      channels: { type: "array", items: { type: "string" }, description: "Channels to scan ('general' or machine names). Default: ['general', this machine]." },
+      types: { type: "array", items: { type: "string" }, description: "Keep only these speech-act types (ask/reply/note/data/ack). Default: all." },
+      to_me_only: { type: "boolean", description: "Keep only messages addressed to this machine. Default false." },
+      keywords: { type: "array", items: { type: "string" }, description: "Also flag messages whose body contains any keyword (case-insensitive)." },
+      stale_hours: { type: "integer", description: "Age threshold for escalating unanswered inbound obligations. Default 48." },
+      include_board: { type: "boolean", description: "Include obligation-board counts. Default true." },
+      update_cursor: { type: "boolean", description: "Advance this role's cursor to the newest scanned mid. Default false." },
+    },
+    async execute(args) {
+      const bad = guard(); if (bad) return bad;
+      const chans = (args.channels && args.channels.length) ? args.channels : ["general", cfg.machine];
+      const staleH = args.stale_hours ?? 48;
+      const now = Date.now();
+      const cur = (await readText(cursorPath())).match(/last_seen:\s*(\S+)/);
+      const last = cur ? cur[1] : "";
+      const allMsgs = [];   // every message on scanned channels (for board/stale)
+      const seen = [];      // messages newer than cursor
+      let newestMid = "";
+      for (const ch of chans) {
+        for (const m of parseMessages(await readText(channelPath(ch)))) {
+          const rec = { ...m, channel: ch };
+          allMsgs.push(rec);
+          if (!last || tailTs(m.mid) > tailTs(last)) {
+            seen.push(rec);
+            if (tailTs(m.mid) > tailTs(newestMid)) newestMid = m.mid;
+          }
+        }
+      }
+      const kws = (args.keywords ?? []).map((k) => k.toLowerCase());
+      const candidates = [];
+      for (const m of seen) {
+        if (args.types && args.types.length && !args.types.includes(m.type)) continue;
+        if (args.to_me_only && m.to !== cfg.machine) continue;
+        const reasons = [];
+        if (m.to === cfg.machine) reasons.push("to-me");
+        if (args.types && args.types.length) reasons.push("type:" + m.type);
+        const bodyLow = m.body.toLowerCase();
+        for (const k of kws) if (bodyLow.includes(k)) { reasons.push("keyword:" + k); break; }
+        if (!reasons.length) reasons.push("new");
+        const t = Date.parse(m.ts);
+        candidates.push({
+          mid: m.mid, channel: m.channel, from: m.from, role: m.role, type: m.type, to: m.to,
+          age_hours: Number.isFinite(t) ? Math.round((now - t) / 3600000) : null,
+          reasons, pointers_count: m.pointers.length, body: m.body.slice(0, 200),
+        });
+      }
+      const answeredByMe = (mid) => allMsgs.some((x) => x.re === mid && (x.type === "ack" || x.type === "reply") && x.from === cfg.machine);
+      const stale = allMsgs
+        .filter((m) => (m.type === "data" || m.type === "ask") && m.from !== cfg.machine && (m.to === cfg.machine || m.to === "general") && !answeredByMe(m.mid))
+        .map((m) => {
+          const t = Date.parse(m.ts);
+          const age = Number.isFinite(t) ? Math.round((now - t) / 3600000) : null;
+          return { mid: m.mid, channel: m.channel, from: m.from, type: m.type, age_hours: age, stale: age !== null && age >= staleH, body: m.body.slice(0, 200) };
+        })
+        .filter((r) => r.stale);
+      let board;
+      if (args.include_board !== false) {
+        const answeredBy = (mid, who) => allMsgs.some((x) => x.re === mid && (x.type === "ack" || x.type === "reply") && (who === "me" ? x.from === cfg.machine : x.from !== cfg.machine));
+        board = {
+          inbound_count: allMsgs.filter((m) => (m.type === "data" || m.type === "ask") && m.from !== cfg.machine && (m.to === cfg.machine || m.to === "general") && !answeredBy(m.mid, "me")).length,
+          outbound_awaiting_count: allMsgs.filter((m) => (m.type === "data" || m.type === "ask") && m.from === cfg.machine && !answeredBy(m.mid, "others")).length,
+        };
+      }
+      let cursor_advanced = null;
+      if (args.update_cursor && newestMid) {
+        await writeFile(cursorPath(), `last_seen: ${newestMid}\n`, "utf8");
+        cursor_advanced = newestMid;
+      }
+      return {
+        channels: chans, cursor: last || null, scanned_new: seen.length,
+        candidate_count: candidates.length, candidates: candidates.slice(-50),
+        stale_count: stale.length, stale,
+        board,
+        next_stage: "LLM judgment (stage-2): for each candidate/stale row decide act | defer | ignore, then log the verdict with fed_watchdog_note",
+        cursor_advanced,
+      };
+    },
+  }));
+
+  reg(defineTool({
+    name: "fed_watchdog_note",
+    description: "Watchdog verdict receipt with the three-state schema: progress (substantive advance) | deviation (drift from plan) | intervention (human or peer action needed). 'log' appends one receipt to cursor/<machine>-<role>.watch.md (append-only, one file per role); 'recent' lists the latest receipts so the next watch turn keeps continuity.",
+    parameters: {
+      action: { type: "string", required: true, enum: ["log", "recent"], description: "log = append a verdict receipt; recent = read latest receipts." },
+      state: { type: "string", enum: ["progress", "deviation", "intervention"], description: "Verdict state; required for log." },
+      note: { type: "string", description: "One to three sentence verdict; required for log." },
+      re: { type: "string", description: "mid of the trigger this verdict answers (optional)." },
+      next_due: { type: "string", description: "ISO time of the next expected check (optional)." },
+      limit: { type: "integer", description: "recent: max receipts to return, newest last. Default 10." },
+    },
+    async execute(args) {
+      const bad = guard(); if (bad) return bad;
+      const p = join(cfg.roomRoot, "cursor", `${cfg.machine}-${cfg.role}.watch.md`);
+      if (args.action === "recent") {
+        const notes = parseMessages(await readText(p)).slice(-(args.limit ?? 10))
+          .map((m) => ({ mid: m.mid, ts: m.ts, state: m.state, re: m.re || null, next_due: m.next_due || null, note: m.body }));
+        return { count: notes.length, notes };
+      }
+      if (!args.state || !args.note) return { error: "log requires state and note" };
+      if (!["progress", "deviation", "intervention"].includes(args.state)) return { error: "state must be progress | deviation | intervention" };
+      const mid = `${cfg.machine}-${cfg.role}-wd-${stamp()}`;
+      const head = ["---", `mid: ${mid}`, `from: ${cfg.machine}`, `role: ${cfg.role}`, `ts: ${iso()}`, `state: ${args.state}`];
+      if (args.re) head.push(`re: ${args.re}`);
+      if (args.next_due) head.push(`next_due: ${args.next_due}`);
+      head.push("---");
+      const cur = await readText(p);
+      const pre = cur && !cur.endsWith("\n") ? "\n" : "";
+      const block = `${cur ? pre + "\n" : ""}${head.join("\n")}\n\n${args.note}\n`;
+      await appendFile(p, block, "utf8");
+      return { mid, state: args.state, logged: block.length };
+    },
+  }));
+
   ctx.effect(() => () => { for (const d of disposers) d(); disposers.length = 0; }, "fed-tools.dispose()");
 }

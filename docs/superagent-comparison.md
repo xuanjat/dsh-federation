@@ -42,6 +42,6 @@
 
 ## 四、对插件与后续工作的输入
 
-- 插件v0.3候选（待tlf拍板）：fed_trigger_watch（规则过滤→LLM判断两级Trigger流水线，补push缺口的pull侧近似）、fed_watchdog_note（Watchdog判断回执模板：实质进展/偏离/介入三态）、其余维持MVP五工具不动。
+- 插件v0.3（tlf已拍板都做，v0.3.0落地2026-11-08）：fed_trigger_watch（规则过滤→LLM判断两级Trigger流水线，补push缺口的pull侧近似）、fed_watchdog_note（Watchdog判断回执模板：实质进展progress/偏离deviation/介入intervention三态，一岗一档append-only）；其余维持MVP五工具不动。
 - 命名纪律：新工具与文档机制一律先命名后描述。
 - 实验补强：case-study加一节"自然消融"（事故反事实表），不新造合成基准。

@@ -5,7 +5,7 @@
 
 ## 状态（2026-11-03）
 
-**MVP 源码已落地：[plugin/](plugin/)**（host-only cordis bundle，零依赖，五工具齐备：fed_room_scan / fed_room_post / fed_cursor / fed_handoff_verify / fed_ack_board；含中英 locale 与吉祥物 icon；逻辑冒烟测试通过，待真实 profile 安装验证）。下表保留为设计基线。
+**v0.3.0 已落地：[plugin/](plugin/)**（host-only cordis bundle，零依赖，七工具：MVP五件套 fed_room_scan / fed_room_post / fed_cursor / fed_handoff_verify / fed_ack_board + 值守两件套 fed_trigger_watch / fed_watchdog_note；含中英 locale 与吉祥物 icon；stub冒烟19项PASS；已真实 profile 安装验证（web，link:符号链接），会话内实跑待重启确认）。下表保留为设计基线。
 
 ## 定位与边界
 

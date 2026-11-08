@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "DSH Federation Tools",
-    "description": "Cross-machine federation client: room scan/post with speech-act types, per-role cursors, out-of-context sha256 handoff verification, and the ack/obligation board."
+    "description": "Cross-machine federation client: room scan/post with speech-act types, per-role cursors, out-of-context sha256 handoff verification, and the ack/obligation board; v0.3 adds the watch trigger (rule-filter stage feeding LLM judgment) and the watchdog verdict receipt (progress/deviation/intervention)."
   }
 }
