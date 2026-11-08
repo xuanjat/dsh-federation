@@ -1,6 +1,6 @@
 {
   "name": "dsh-federation-tools",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Cross-machine DSH federation client: room scan/post, per-role cursors, out-of-context sha256 handoff verification, and the ack/obligation board.",
   "private": true,
   "type": "module",

@@ -1,4 +1,4 @@
-# dsh-federation-tools（v0.2 插件 MVP）
+# dsh-federation-tools（v0.2.1 插件 MVP）
 
 DeepSeek Harness（DSH）host-only 插件包：把 [房间协议](../../spec/room-protocol.md) 与 [交付协议](../../spec/handoff-manifest.md) 的操作面变成 5 个 agent 工具。**零运行时依赖**（只用 node 内置 + harness 的 `defineTool`），**传输无关**：房间 = 一个 UTF-8 markdown 目录（本地镜像 / sshfs 挂载 / 共享库同步均可）。
 
@@ -14,11 +14,17 @@ DeepSeek Harness（DSH）host-only 插件包：把 [房间协议](../../spec/roo
 
 ## 安装（DSH ≥0.2.1，cordis bundle）
 
-本目录即 bundle（`package.json` 声明 `dsh.bundle.patch`）。在任一 DSH 会话里：
+本目录即 bundle（`package.json` 声明 `dsh.bundle.patch`）。两种已验证/设计内安装方式：
 
 ```
+# 方式一：会话内插件管理器
 plugin_manager({ action: "install_bundle", target: "<本目录绝对路径>" })
+
+# 方式二：CLI（profile 级，2026-11-08 于本机 web profile 实测）
+dsh plugin --profile web add <本目录绝对路径>
 ```
+
+方式二落地三件套：`profiles/<profile>/package.json` 的 dependencies（`link:<路径>`）+`dsh.profile.bundles` 追加包名 +`node_modules/<包名>` 链接副本。注意：用旧版 npx CLI（0.2.1-rc.2）安装时，exit=1 的告警文本可能是**profile 里其他插件**对该 CLI 版本的兼容门（如 dsh-client-ui-skin-center@0.4.15 vs 0.2.1），不代表本包失败——以三件套核验为准；运行中的新服务端（0.2.2-rc.1）不受该门影响。插件 UI/工具列表需重启 DSH 并刷新页面才出现（技能目录热生效、插件不热生效）。
 
 安装后在插件行 config 填：
 
@@ -34,5 +40,6 @@ plugin_manager({ action: "install_bundle", target: "<本目录绝对路径>" })
 
 - `index.js` 为纯 ESM；语法经 ESM 解析校验通过。
 - 逻辑冒烟测试：以 stub 的 `@deepseek-ai/dsh-tools`（`defineTool = o => o`）+ 假 ctx 跑通五工具全链路（scan→post→verify→board→cursor 回环），含"reply 闭合 ask 后看板清零"等语义断言。
-- **未**在真实 profile 安装验证（本会话无 `plugin_manager` 权限）；接入方安装后请以 `application: applied` 与实跑五工具为准。
+- v0.2.1（2026-11-08）：修复 `parseMessages` 围栏 bug——旧实现按所有 `\n---\n` 切块，导致 `fed_room_post` 自写的围栏格式消息体丢失（只剩头部块）；现按 `\n---\n(?=mid:)` 切分并容忍围栏/无围栏两种序列化，冒烟复测 scan 全量消息含 body。
+- 真实 profile 安装已验证（2026-11-08，web profile）：三件套齐备、node_modules 副本与仓库 index.js sha256 前12位全等（2ea80884e366）；stub 冒烟五工具全链路通过（scan 判新/post 追加/游标守卫/未配置 guard）。会话内实跑待 DSH 重启后由接入方确认。
 - 与 [PLUGIN-ROADMAP.md](../PLUGIN-ROADMAP.md) 的对应：M1=fed_room_scan/post，M2=fed_cursor，M3=fed_handoff_verify，M4=fed_ack_board（M1–M4 源码齐备，M5 跨机 e2e 演练待接入方）。

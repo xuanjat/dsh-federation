@@ -35,8 +35,13 @@ async function readText(p) {
 /** Parse append-only channel text into message objects (spec §3). */
 export function parseMessages(text) {
   const out = [];
-  for (const block of text.split(/\n---\n/)) {
-    const t = block.trim();
+  // Split only at separator lines that introduce a new message (a bare "---"
+  // followed by a mid: line), so the "---" fences inside a message (header
+  // fence and header/body fence, as written by fed_room_post and the spec)
+  // survive intact. Tolerates both fenced and unfenced serializations.
+  for (const block of text.split(/\n---\n(?=mid:)/)) {
+    let t = block.trim();
+    if (t.startsWith("---\n")) t = t.slice(4).trim();
     if (!t.startsWith("mid:")) continue;
     const lines = t.split("\n");
     const head = {};
@@ -46,6 +51,7 @@ export function parseMessages(text) {
       if (!m) break;
       head[m[1]] = m[2].trim();
     }
+    if (lines[i] === "---") i++;
     const body = lines.slice(i).join("\n").trim();
     const pointers = [...body.matchAll(/^data:\s*(\S+)\s+sha256=([0-9a-fA-F]{64})\s+bytes=(\d+)/gm)]
       .map((m) => ({ path: m[1], sha256: m[2].toLowerCase(), bytes: Number(m[3]) }));
