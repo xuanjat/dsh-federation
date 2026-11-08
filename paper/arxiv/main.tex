@@ -1,0 +1,580 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[11pt,]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
+\hypersetup{
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=1in]{geometry}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+\title{dsh-federation: A Semantic-Level Coordination and Transport Plane for Heterogeneous Cross-Machine LLM-Agent Federations}
+\author{Lifeng Tian}
+\date{November 2026}
+
+\begin{document}
+\maketitle
+
+\hypertarget{dsh-federation-a-semantic-level-coordination-and-transport-plane-for-heterogeneous-cross-machine-llm-agent-federations}{%
+\section{dsh-federation: A Semantic-Level Coordination and Transport
+Plane for Heterogeneous Cross-Machine LLM-Agent
+Federations}\label{dsh-federation-a-semantic-level-coordination-and-transport-plane-for-heterogeneous-cross-machine-llm-agent-federations}}
+
+\hypertarget{abstract}{%
+\subsection{Abstract}\label{abstract}}
+
+Personal LLM-agent harnesses now run simultaneously on many
+heterogeneous machines (workstations, cloud servers, LAN boxes, offline
+nodes), yet each instance is a silo: its sessions, files, and learned
+lessons do not cross machine boundaries, and letting one agent operate
+another machine's shell is a security red line. We present
+\textbf{dsh-federation}, a zero-infrastructure method framework that
+federates \emph{independent} agent instances through a single shared,
+plain-text context database. Its core is a \textbf{semantic-level
+transport model}: messages carry only speech-act headers (five
+performatives), four-coordinate identities, and monotonic timestamps;
+anything larger than a small threshold travels as a
+\textbf{content-addressed pointer} (path + SHA-256 + byte count) that is
+verified \emph{outside} any agent's context window. We formalize the
+message calculus and prove three cost properties: per-delivery context
+cost is O(header) and independent of payload size; novelty detection is
+O(1) via fixed-width timestamp comparison; and k-hop relay adds zero
+repeated context payment because pointers are idempotent. Around the
+transport we specify organizational governance --- a versioned,
+incident-driven handbook with red lines, role-scoped acknowledgment
+obligations, and time-triggered watchkeeping suited to turn-based
+agents. We report a sanitized eleven-day field deployment across five
+heterogeneous machines (protocol v1.0→v1.4, eight role types, 45
+cross-machine lessons, 13 archived incidents, multi-thousand-file
+deliveries with per-file digest verification) and a 49-system novelty
+assessment. Per our search (2026-11), no public scheme is isomorphic to
+this combination; we state claims at a deliberately conservative level.
+
+\textbf{Keywords:} multi-agent systems, LLM agents, agent communication,
+semantic communication, content addressing, coordination artifacts,
+organizational governance, field deployment.
+
+\hypertarget{introduction}{%
+\subsection{1. Introduction}\label{introduction}}
+
+A single developer or small team today routinely operates several
+LLM-agent instances: one on a laptop, one on a cloud server, one on a
+LAN machine without external network, and so on. Each instance is
+\emph{turn-based} (it acts, returns, and is re-invoked),
+\emph{context-bounded} (its working memory is a token window that is
+billed and that degrades with length), and \emph{environment-privileged}
+(it holds credentials and shell rights on exactly one machine). Three
+consequences follow.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Silos.} Lessons learned on machine A (a command trap, a config
+  pitfall, an incident root cause) are invisible to machine B unless a
+  human copies them.
+\item
+  \textbf{Context scarcity as the true bandwidth.} When agents
+  collaborate, the scarce channel is not network bandwidth but the
+  context window: every byte that enters it is paid for in tokens and
+  competes with the task at hand.
+\item
+  \textbf{The remote-shell red line.} The naive fix --- letting agent A
+  ssh into machine B and run commands --- merges trust domains and is
+  exactly what operational red lines forbid (``never operate another
+  machine on its behalf'').
+\end{enumerate}
+
+Existing answers address \emph{single-host} multi-agent work (built-in
+agent teams, swarm frameworks) or \emph{platform-scale} infrastructure
+(organization-level agent substrates with identity, discovery, and
+container orchestration). Neither fits the personal/small-team setting:
+independent heterogeneous instances, no open ports, no broker clusters,
+no budget for platform operations, and a human who must be able to audit
+everything by reading plain text.
+
+\textbf{Positioning as a research prototype.} dsh-federation is a
+research prototype for cross-architecture, cross-harness multi-agent
+collaboration and work relay: independent agent instances on different
+machine architectures --- and even different builds of DSH-class
+harnesses --- hand work to one another through the federation, and
+compared with traditional single-session execution it obtains efficient
+deployment and convenient operation at near-zero marginal cost (no
+broker, no open ports, no platform team). Concurrently, the DeepSeek
+Harness team's Super-agent design exploration {[}31{]} reports the same
+attention bottleneck --- a human sustains only 3--5 active sessions ---
+and answers it inside one organization's footprint with a two-layer
+Router/Worker architecture, event-driven triggers, speculative
+execution, and a Watchdog session, while listing cross-instance A2A
+communication and cross-session human collaboration as open problems. We
+occupy exactly that open slot from the opposite direction: rather than
+redesigning the interior of one agent stack, we federate
+already-deployed independent instances with plain-text organizational
+artifacts, across machines and harness builds.
+
+\textbf{Contributions.} (i) A method framework that federates
+independent, heterogeneous LLM-agent instances over one shared
+plain-text context database with \textbf{zero additional infrastructure}
+(§3). (ii) A \textbf{semantic-level transport model} with a message
+calculus and three cost propositions (§4), positioned against speech-act
+communication, tuple spaces, publish/subscribe with consumer offsets,
+content addressing, and provenance standards. (iii) An
+\textbf{organizational governance layer}: versioned incident-driven
+handbook, red-line evolution, role-scoped acknowledgment obligations,
+and time-triggered watchkeeping for turn-based agents (§5). (iv) A
+\textbf{sanitized field study} (five machines, eleven days) plus a
+49-system × 10-dimension novelty assessment with an explicit claim
+ladder (§6, §7).
+
+\hypertarget{setting-and-constraints}{%
+\subsection{2. Setting and Constraints}\label{setting-and-constraints}}
+
+\textbf{Agents.} Each node is a turn-based LLM-agent harness (we deploy
+on DeepSeek Harness; the method is harness-agnostic). An agent cannot
+block: between turns it is inert. Hence all liveness must come from
+\emph{scheduled re-invocation}, not from listening sockets.
+
+\textbf{Substrate.} One shared context database reachable by every node
+through \emph{some} path: an outbound ssh tunnel, a local/sshfs mount,
+or --- for a node with no network at all --- a human or peer relay
+carrying files. The substrate stores UTF-8 text; binary payloads live in
+an attached store and are referenced, never embedded.
+
+\textbf{Threat and audit model.} No inbound ports; no agent ever
+executes commands on another machine; every coordination artifact is
+append-only plain text that a human can read end-to-end; integrity rests
+on SHA-256 digests computed outside agent contexts. Credentials never
+appear in the shared substrate.
+
+\textbf{Heterogeneity.} Nodes differ in OS, model backend, network
+reachability, and uptime. The only required capability is reading and
+writing UTF-8 text files.
+
+\hypertarget{the-room-coordination-artifact-as-transport}{%
+\subsection{3. The Room: Coordination Artifact as
+Transport}\label{the-room-coordination-artifact-as-transport}}
+
+The federation's coordination state lives in a \emph{room}: a directory
+of append-only Markdown logs.
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{general.md} --- the public channel;
+\item
+  \texttt{inbox/\textless{}machine\textgreater{}.md} --- per-machine
+  inbound queue;
+\item
+  \texttt{cursor/\textless{}machine\textgreater{}-\textless{}role\textgreater{}.md}
+  --- per-role consumption offsets;
+\item
+  role and governance texts elsewhere in the shared database.
+\end{itemize}
+
+A \textbf{message} is a fenced block with a YAML-like header and a body:
+
+\begin{verbatim}
+mid: <machine>-<role>-<YYYYMMDDTHHMMSS>
+from: <machine>
+role: <role>
+to: <machine> | general
+ts: <ISO-8601>
+type: ask | reply | note | data | ack
+re: <mid>            # mandatory for reply
+<body, or pointer lines for type=data>
+\end{verbatim}
+
+Design rules, each traceable to a real incident in the field study:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{R1 (append-only).} Logs are never rewritten; corrections are
+  new messages. Provenance is structural.
+\item
+  \textbf{R2 (seconds-granular ids).} \texttt{mid} embeds a fixed-width
+  timestamp \emph{with seconds}; two roles on one machine posting in the
+  same minute collided before this rule.
+\item
+  \textbf{R3 (tail-timestamp novelty).} ``Have I seen this?'' compares
+  only the fixed-width timestamp suffix of \texttt{mid}. Comparing whole
+  ids lexicographically is a trap: machine-name prefixes reorder ids
+  across machines.
+\item
+  \textbf{R4 (payload threshold).} Bodies above 2 KB must become
+  \texttt{data} messages whose body is pointer lines
+  \texttt{data:\ \textless{}path\textgreater{}\ \ sha256=\textless{}hex\textgreater{}\ \ bytes=\textless{}n\textgreater{}}.
+\item
+  \textbf{R5 (one cursor per role).} Cursors are per (machine, role);
+  sharing one cursor across roles on a multi-role machine lost messages.
+\item
+  \textbf{R6 (no secrets).} The substrate carries no tokens, keys, or
+  personal data; payloads with such content stay out of the shared store
+  entirely.
+\end{itemize}
+
+\hypertarget{semantic-level-transport-model}{%
+\subsection{4. Semantic-Level Transport
+Model}\label{semantic-level-transport-model}}
+
+\hypertarget{message-calculus}{%
+\subsubsection{4.1 Message calculus}\label{message-calculus}}
+
+\textbf{Definition 1 (semantic message).} A message is a triple
+\(d = (a, p, r)\) where \(a\) is the \emph{act header} (performative
+\(\pi \in \{\)ask, reply, note, data, ack\(\}\), identity four-tuple
+\((m_{from}, \rho_{from}, m_{to}, \rho^*_{to})\), monotonic timestamp
+\(t\), and optional referent \(re\)), \(p\) is an optional
+\emph{content-addressed pointer} \((\text{path}, h, n)\) with
+\(h = \text{SHA-256}\) and byte count \(n\), and \(r\) is an optional
+inline residue with \(|r| \le B\) (deployment value \(B = 2\) KB).
+
+\textbf{Definition 2 (channel).} A channel \(C\) is an append-only
+sequence \(d_1, d_2, \dots\); its \emph{semantic projection} is the
+sequence of headers and pointers only.
+
+\textbf{Definition 3 (cursor).} For consumer \((m, \rho)\),
+\(\kappa(m,\rho) \in \mathbb{N}\) is the index of the last consumed
+element; novelty is the suffix test of R3 applied to elements beyond
+\(\kappa\).
+
+\textbf{Definition 4 (delivery manifest).} A delivery of payload set
+\(P = \{f_1, \dots, f_k\}\) is one \texttt{data} message whose pointer
+list enumerates \((\text{path}_i, h_i, n_i)\); acceptance requires, for
+each \(i\), an out-of-context equality check
+\(\text{SHA-256}(f_i) = h_i \land |f_i| = n_i\), after which the
+receiver posts \texttt{ack}.
+
+\textbf{Definition 5 (watch schedule).} A function
+\(W: \text{time} \to \{\text{invoke}, \varnothing\}\) re-invokes each
+role on a cadence (deployment: 1 h daytime, 2 h night), implementing
+time-triggered activation for agents that cannot listen.
+
+\hypertarget{cost-model}{%
+\subsubsection{4.2 Cost model}\label{cost-model}}
+
+Let \(H\) be header+pointer size (hundreds of bytes) and \(|P|\) payload
+size.
+
+\textbf{Proposition 1 (context cost).} The context-window cost charged
+to sender and receiver for one delivery is \(O(H)\), independent of
+\(|P|\). \emph{Sketch.} By R4 the payload never enters any context; only
+\(a\) and \(p\) do, plus one digest/boolean line from the out-of-context
+verifier. \(\blacksquare\)
+
+\textbf{Proposition 2 (O(1) novelty).} Given cursor \(\kappa\),
+detecting whether new messages exist costs one fixed-width string
+comparison per channel, not a scan of message bodies. \emph{Sketch.} R3
+makes the suffix a total order key; bodies are irrelevant to novelty.
+\(\blacksquare\)
+
+\textbf{Proposition 3 (relay idempotence).} Forwarding a pointer across
+\(k\) hops charges \(O(H)\) per hop and \(O(H)\) total \emph{semantic}
+cost to the federation: the pointer denotes the same content at every
+hop, so no hop re-pays payload context and verification remains
+end-to-end by digest equality. \emph{Sketch.} Content addressing makes
+\(p\) location-independent; equality of \(h\) is transitive.
+\(\blacksquare\)
+
+These properties map directly onto the failure taxonomy of LLM
+multi-agent systems ( MAST ): specification ambiguity is bounded by five
+performatives with mandatory referents; inter-agent misalignment is
+bounded by explicit ack obligations (§5); unrecoverable failures become
+visible because every act is logged append-only; and context
+poisoning/overflow is bounded by Proposition 1. We state this as
+\emph{design intent}, not as measured efficacy.
+
+\hypertarget{lineage}{%
+\subsubsection{4.3 Lineage}\label{lineage}}
+
+Speech acts → KQML → FIPA-ACL supply the performative discipline;
+Linda/blackboards supply shared coordination artifacts;
+publish/subscribe with consumer offsets (Kafka logs) supply cursors;
+Merkle/IPFS content addressing and W3C PROV supply pointers and
+provenance; event- vs time-triggered architecture supplies the watch
+schedule; goal-oriented semantic communication supplies the ``transmit
+intent, not bits'' stance. The combination --- and its reduction to
+\emph{plain files} as the universal narrow waist --- is what we
+contribute.
+
+\hypertarget{organizational-governance}{%
+\subsection{5. Organizational
+Governance}\label{organizational-governance}}
+
+Transport without governance decays: roles blur, obligations lapse,
+lessons evaporate. dsh-federation specifies four instruments.
+
+\textbf{Roles.} Named posts per machine (diplomat, mechanic, editor,
+coordinator, \ldots{}); a machine may hold several; every message header
+carries the posting role, making responsibility auditable.
+
+\textbf{Versioned handbook with red lines.} Cross-machine lessons live
+in an append-only handbook with numbered entries and an index;
+operational prohibitions are \emph{red lines} with monotonic numbering
+(never renumbered). Crucially, red lines are \textbf{incident-driven
+patches}: each of the 13 archived incidents in the field study produced
+at least one rule (e.g., a session-registry overwrite incident produced
+the ``never rewrite coordination state'' family; a tunnel-death incident
+produced the watchdog rule). The handbook is thus a living patch series
+over the organization's failure surface.
+
+\textbf{Acknowledgment obligations.} Borrowing commitment-based MAS
+semantics: a \texttt{data} or \texttt{ask} message creates a debtor
+obligation on its addressee, discharged only by \texttt{ack} or
+\texttt{reply}. A derived \textbf{ack board} (two columns: inbound
+obligations uncleared; outbound messages awaiting discharge) is
+computable from the logs alone and drives the watch turns.
+
+\textbf{Time-triggered watchkeeping.} Because agents cannot block
+(Definition 5), liveness is a schedule. Cadence is a policy parameter
+(day/night tiers), and each watch turn is a fixed checklist: scan
+cursors, discharge obligations, update the board, escalate staleness.
+
+\hypertarget{field-study-sanitized}{%
+\subsection{6. Field Study (sanitized)}\label{field-study-sanitized}}
+
+Five heterogeneous machines (a Windows workstation, a cloud Linux server
+hosting the shared database, a LAN node, a dormitory node, and an
+offline node served by relay) ran the method for eleven days (2026-10-22
+→ 11-02). Machine names are pseudonyms; all identifiers, paths, and
+contents are sanitized.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Protocol evolution:} v1.0 → v1.4 in ten days, all changes
+  backward-compatible; each minor version traceable to incidents or
+  onboarding friction.
+\item
+  \textbf{Organization:} 8 role types; multi-role machines; one
+  editor-in-chief owns the shared handbook (v2.1.2: four volumes, 45
+  cross-machine lessons, 15 red lines, 13 incident archives).
+\item
+  \textbf{Deliveries:} multi-thousand-file packages (chapter drafts,
+  figure sets, CSV matrices) moved as pointer manifests with per-file
+  SHA-256 + byte verification; zero undetected corruption; context cost
+  per delivery observed at header scale.
+\item
+  \textbf{Liveness:} watch cadence institutionalized (1 h day / 2 h
+  night); a 48-hour escalation rule for unanswered obligations; weekly
+  digest.
+\item
+  \textbf{Failure pedagogy:} the four protocol rules R2, R3, R5 and the
+  newline-handling rule each exist because a real message was lost or
+  misordered without them.
+\end{itemize}
+
+We report this as \emph{existence evidence} for operability, not as a
+controlled evaluation.
+
+\hypertarget{novelty-assessment-and-claim-ladder}{%
+\subsection{7. Novelty Assessment and Claim
+Ladder}\label{novelty-assessment-and-claim-ladder}}
+
+We compared 49 systems across 10 dimensions (single-host orchestrators;
+cross-machine protocols; Claude/DSH ecosystems; memory systems; academic
+simulations; governance toolkits). Nearest neighbors: (a)
+\textbf{platform substrates} for organization-scale persistent agents
+(identity/discovery/routing/containers; one ships a harness channel
+plugin) --- different route: they \emph{are} infrastructure, we require
+none; (b) \textbf{single-box swarm frameworks} with hierarchical memory
+--- complementary, not cross-machine; (c) \textbf{built-in single-host
+agent teams} --- complementary; (d) \textbf{concurrent
+single-organization super-agent architecture} (two-layer Router/Worker,
+event triggers with thread subscription, Inline \& Spill and
+Chain-of-Recall context mechanics, Watchdog control loop; prototype
+plugin \texttt{dsh-superagent-prototype}) {[}31{]} --- same motivation
+(attention bottleneck, session silos), different unit of redesign: they
+re-engineer one organization's agent interior with programmatic routing
+and push events on a single harness deployment, whereas we leave every
+instance untouched and add only a cross-instance organizational layer
+that works across machines and harness builds; their stated open
+problems (A2A between agent instances, collaboration detached from
+sessions) are precisely the surfaces our room protocol, pointer
+delivery, and ack obligations specify. Per our search (2026-11), no
+public scheme combines heterogeneous cross-machine instances + a shared
+plain-text context database as the sole substrate + versioned
+incident-driven handbook governance + pointer-based delivery-integrity
+protocol + turn-driven time-triggered watchkeeping + field evidence. Our
+claim ladder states results at level L2 (``combination unseen in
+search'') with contribution-style L3 sentences; ``first-ever'' claims
+are explicitly disclaimed, and the strongest single dimension is the
+delivery-integrity protocol (digest discipline outside context), the
+weakest are topology discovery and human-in-the-loop design.
+
+\hypertarget{limitations}{%
+\subsection{8. Limitations}\label{limitations}}
+
+No push delivery (polling only); no server-side deduplication or
+permission isolation in the substrate (compensated by cursor discipline
+and red lines); a single shared trust root; parameters (2 KB, cadences)
+are deployment choices, not optima; metrics are self-reported from one
+organization; the MAST alignment is design intent, not measured
+efficacy; the comparison with concurrent super-agent designs {[}31{]} is
+qualitative --- their measurements run on synthetic loads, ours on
+sanitized field logs, and no head-to-head benchmark exists.
+
+\hypertarget{conclusion}{%
+\subsection{9. Conclusion}\label{conclusion}}
+
+dsh-federation shows that a federation of independent, heterogeneous LLM
+agents can be coordinated with \emph{nothing but text}: semantic headers
+and content-addressed pointers keep the scarce resource --- context ---
+free of payloads, while a versioned handbook, ack obligations, and
+time-triggered watchkeeping keep the organization alive between turns.
+The eleven-day five-machine deployment suggests the design is not merely
+consistent but operable, and its incident-driven rule set is a reusable
+artifact for anyone running personal agent federations.
+
+\hypertarget{references}{%
+\subsection{References}\label{references}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Searle, J. R. (1969). \emph{Speech Acts: An Essay in the Philosophy of
+  Language}. Cambridge University Press.
+\item
+  Finin, T., et al. (1994). KQML as an agent communication language.
+  \emph{CIKM '94}.
+\item
+  FIPA (2002). \emph{FIPA Communicative Act Library Specification},
+  SC00037.
+\item
+  Gelernter, D. (1985). Generative communication in Linda. \emph{ACM
+  TOPLAS}, 7(1).
+\item
+  Nii, H. P. (1986). Blackboard systems. \emph{AI Magazine}, 7(2).
+\item
+  Eugster, P. Th., Felber, P. A., Guerraoui, R., \& Kermarrec, A.-M.
+  (2003). The many faces of publish/subscribe. \emph{ACM Computing
+  Surveys}, 35(2).
+\item
+  Kreps, J., Narkhede, N., \& Rao, J. (2011). Kafka: a distributed
+  messaging system for log processing. \emph{NetDB '11}.
+\item
+  Merkle, R. C. (1980). Protocols for public key cryptosystems.
+  \emph{IEEE Symposium on Security and Privacy}.
+\item
+  Benet, J. (2014). IPFS --- content addressed, versioned, P2P file
+  system. \emph{arXiv:1407.3561}.
+\item
+  Moreau, L., et al. (2013). \emph{PROV-Overview: An Overview of the
+  PROV Family of Documents}. W3C.
+\item
+  Shannon, C. E., \& Weaver, W. (1949). \emph{The Mathematical Theory of
+  Communication}. University of Illinois Press.
+\item
+  Kopetz, H. (1991). Event-triggered versus time-triggered real-time
+  systems. \emph{Dagstuhl Seminar: Operating Systems of the 90s}.
+\item
+  Theraulaz, G., \& Bonabeau, E. (1999). A brief history of stigmergy.
+  \emph{Artificial Life}, 5(2).
+\item
+  Malone, T. W., \& Crowston, K. (1994). The interdisciplinary study of
+  coordination. \emph{ACM Computing Surveys}, 26(1).
+\item
+  Esteva, M., Rodríguez-Aguilar, J. A., Sierra, C., García, P., \&
+  Arcos, J. L. (2001). On the formal specification of electronic
+  institutions. \emph{AMEC III}, Springer.
+\item
+  Hübner, J. F., Sichman, J. S., \& Boissier, O. (2013).
+  \emph{Organizing Multi-Agent Systems}. Springer.
+\item
+  Singh, M. P. (1999). An ontology for commitments in multiagent
+  systems. \emph{Artificial Intelligence and Law}, 7(1).
+\item
+  Guo, T., et al. (2024). Large language model based multi-agents: a
+  survey of progress and challenges. \emph{arXiv:2402.01680} (IJCAI
+  2024).
+\item
+  Cemri, M., et al. (2025). Why do multi-agent LLM systems fail?
+  \emph{arXiv:2503.13657} (NeurIPS 2025 Datasets \& Benchmarks).
+\item
+  Zhang, Z., et al. (2024). A survey on the memory mechanism of large
+  language model based agents. \emph{arXiv:2404.13501}.
+\item
+  Liu, N. F., et al. (2024). Lost in the middle: how language models use
+  long contexts. \emph{TACL} (arXiv:2307.03172).
+\item
+  Chen, L., Zaharia, M., \& Zou, J. (2023). FrugalGPT: how to use large
+  language models while reducing cost and improving performance.
+  \emph{arXiv:2305.05176}.
+\item
+  Goal-oriented semantic communication for intelligent networks: a
+  survey. (2025). \emph{arXiv:2512.12758}.
+\item
+  Wu, Q., et al. (2023). AutoGen: enabling next-gen LLM applications via
+  multi-agent conversation. \emph{arXiv:2308.08155}.
+\item
+  Hong, S., et al. (2023). MetaGPT: meta programming for a multi-agent
+  collaborative framework. \emph{arXiv:2308.00352}.
+\item
+  Qian, C., et al. (2023). Communicative agents for software
+  development. \emph{arXiv:2307.07924}.
+\item
+  Linux Foundation (2025). \emph{Agent2Agent (A2A) protocol
+  specification}.
+\item
+  inclusionAI (2026). \emph{AverNet: infrastructure for persistent,
+  organization-scale multi-agent systems} (repository documentation).
+\item
+  ruflo (formerly claude-flow) (2026). \emph{Single-box agent swarm
+  orchestration with hierarchical memory} (repository).
+\item
+  DeepSeek (2026). \emph{deepseek-harness} and its built-in single-host
+  Agent Teams; OpenViking shared context database.
+\item
+  DeepSeek Harness Team (2026). \emph{Super-agent design exploration:
+  Toward more autonomous agent systems} (in Chinese) (architecture
+  exploration article, 2026-11-01; prototype: dsh-superagent-prototype);
+  coverage: DoNews/PChome, 2026-11-01.
+\end{enumerate}
+
+\end{document}
