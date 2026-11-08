@@ -1,7 +1,7 @@
-# dsh-federation-tools bundle patch (Host-only, no dependencies).
+# murmuration-tools bundle patch (Host-only, no dependencies).
 - insert:
     - id: fed-tools
-      name: 'dsh-federation-tools'
+      name: 'murmuration-tools'
       config:
         roomRoot: ''
         payloadRoot: ''

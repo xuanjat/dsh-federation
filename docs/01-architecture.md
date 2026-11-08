@@ -1,6 +1,6 @@
 # 01 · 架构：以共享上下文库为唯一底座的跨机联邦
 
-- 版本：1.0（dsh-federation MVP）
+- 版本：1.0（murmuration MVP）
 - 配套：[房间协议](../spec/room-protocol.md) · [交付协议](../spec/handoff-manifest.md) · [教训](06-lessons.md)
 
 ## 1. 总览

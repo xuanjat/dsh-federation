@@ -1,9 +1,9 @@
 <h1 align="center">
-  <img src="assets/logo.svg" alt="dsh-federation icon: simple-line colored diva portrait (original fan-style art)" width="128" height="128"><br/>
-  dsh-federation
+  <img src="assets/logo.svg" alt="Murmuration icon: simple-line colored starling mascot (original SVG)" width="128" height="128"><br/>
+  Murmuration 🐦
 </h1>
 
-> **A method framework for federating multiple DSH agent instances across machines**
+> **A method framework for federating heterogeneous LLM-agent instances across machines** — like a starling murmuration: no conductor, no middleware, just one shared plain-text room.
 > **A semantic-level coordination & transport plane for heterogeneous, cross-machine LLM-agent federations**: it moves *intent and references*, not payloads — efficient, cheap, runtime-agnostic, auditable.
 > Cross-machine collaboration built entirely on a shared context database — room
 > protocol, role system, versioned governance handbook, delivery discipline, and
@@ -35,34 +35,13 @@ One person (or a small team) runs an AI agent instance on each of several machin
 
 ## Framework at a glance
 
-```mermaid
-flowchart TB
-    subgraph NODES["Heterogeneous nodes — zero open ports between them · independent DSH instances · mixed runtimes"]
-        direction LR
-        N1["🖥️ Windows workstation<br/>diplomat + mechanic"]
-        N2["☁️ Cloud server<br/>editor-in-chief + diplomat"]
-        N3["🏠 LAN / dorm machine<br/>coordinator + roles"]
-        N4["🔌 Offline box<br/>joins via human relay"]
-    end
-
-    subgraph STORE["Shared context database (e.g. OpenViking) — the federation's only substrate (an architectural choice of this method)"]
-        subgraph SEM["Semantic layer: crosses context, cost O(header + pointer)"]
-            ROOM["Room<br/>general.md append-only channel<br/>inbox/machine.md inboxes<br/>cursor/machine-role.md cursors"]
-            GOV["Governance handbook (4 vols)<br/>red lines · cross-machine lessons<br/>incident archive · dispatch<br/>editor-in-chief · ack tracking"]
-            WATCH["Watch cadence<br/>schedule-driven: hourly by day / 2h by night<br/>turn-based, non-blocking polling"]
-        end
-        PAY["Payload layer: never enters context<br/>files / artifacts / 1000-file deliveries<br/>referenced only as path + sha256 + bytes pointers"]
-    end
-
-    NODES <-->|"read/write UTF-8 text<br/>ssh tunnel · local mount · human relay"| ROOM
-    ROOM <-->|"data message = header + pointer<br/>out-of-context sha256 check; one digest line returns"| PAY
-```
+![Murmuration at a glance: one plain-text room federates heterogeneous nodes; payloads stay out of context](assets/figures/fig1-overview.png)
 
 > How to read it: only the **semantic layer** (message headers, pointers, governance text) crosses the context window; the **payload layer** stays outside context at all times. The step-by-step delivery sequence is Figure 1 in [docs/07-transport-model.md](docs/07-transport-model.md).
 
 ## Transport model: intent and references, not payloads
 
-In an agent federation the scarce resource is not bandwidth but the **context window** (long contexts degrade attention and are billed per token). dsh-federation therefore designs transport at the semantic layer:
+In an agent federation the scarce resource is not bandwidth but the **context window** (long contexts degrade attention and are billed per token). murmuration therefore designs transport at the semantic layer:
 
 - **Semantic messages**: exactly five speech acts — ask / reply / note / data / ack (lineage: speech-act theory → KQML → FIPA-ACL) — carrying intent, a four-coordinate identity, and a monotonic timestamp;
 - **References instead of payloads**: anything >2KB becomes a pointer (path + sha256 + bytes); the payload stays in the shared store and **never enters any agent's context** — per-delivery context cost is O(header) ≈ hundreds of bytes, independent of payload size;
@@ -71,7 +50,7 @@ In an agent federation the scarce resource is not bandwidth but the **context wi
 - **Heterogeneity with zero adaptation**: the only interface is "read/write UTF-8 text over any transport" (ssh tunnel / local / human relay) — independent of runtime, model, OS, or network topology; even offline machines join via relay;
 - **Time-triggered watchkeeping**: turn-based agents cannot block, so watch cadence follows the time-triggered architecture (Kopetz, 1991): hourly by day, 2-hourly by night.
 
-| Dimension | Message queue (Kafka-class) | HTTP RPC (A2A-class) | Email/IM | **dsh-federation** |
+| Dimension | Message queue (Kafka-class) | HTTP RPC (A2A-class) | Email/IM | **murmuration** |
 |---|---|---|---|---|
 | Extra infrastructure | broker cluster | service + open ports + client libs | third-party platform accounts | **0** (reuses one shared context DB) |
 | Context cost per delivery | O(payload) | O(payload) | O(payload) | **O(header + pointer)** |
@@ -93,7 +72,7 @@ docs/research novelty assessment: comparison matrix, claim ladder, adversarial r
 templates/    AGENTS.md / HANDBOOK.md / room init / red-line list templates
 reference/    handbook.mjs — the tool used in production on the author's workstation
 case-study/   a sanitized 11-day, 5-machine real deployment
-assets/       framework icon: simple-line colored diva portrait (original SVG, fan-style homage)
+assets/       framework icon: simple-line colored starling mascot (original SVG, fan-style homage)
 paper/        submission-grade short-paper draft (English; formal definitions + references)
 tools/        Phase-A plugin: PLUGIN-ROADMAP + plugin/ installable bundle source
 ```

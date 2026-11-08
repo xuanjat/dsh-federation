@@ -11,7 +11,7 @@ Method: academic-paper-reviewer skill (5 role-separated seats + editorial synthe
 ### Seat 1 — Venue fit (cs.MA short paper)
 - [MAJOR] Genre split: §4 calculus signals theory paper; §6 is experience report. → DISPOSITION: kept both but re-scoped: props restated as design-level cost properties "under stated assumptions"; abstract verb downgraded.
 - [MAJOR] Zero figures/tables. → DEFERRED to tlf (figure-designer pass; see Open items).
-- [MAJOR] No artifact/data-availability statement. → FIXED: §6 "Artifact availability" paragraph + §7 matrix-artifact sentence (github.com/xuanjat/dsh-federation, docs/research/).
+- [MAJOR] No artifact/data-availability statement. → FIXED: §6 "Artifact availability" paragraph + §7 matrix-artifact sentence (github.com/xuanjat/murmuration, docs/research/).
 - [MINOR] Line 4 Status line must be stripped before posting. → HANDLED: arXiv build's sanitize step strips the header block (verified in this rebuild).
 - [MINOR] Abstract number-stuffed. → PARTIAL: "eleven-day (elapsed)" clarified; numbers kept as evidence (author call to trim further).
 - [MINOR] Contribution (iv) references undefined L2/L3 machinery. → FIXED: claim ladder now defined inline in §7 (L0/L1 forbidden, L2 combination, L3 contribution, L4 reusability).

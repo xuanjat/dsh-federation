@@ -1,15 +1,15 @@
-# dsh-federation 新颖性对标矩阵（novelty-matrix）
+# murmuration 新颖性对标矩阵（novelty-matrix）
 
 - 检索窗口：2026-11-02（北京时间）；检索方式：web_search + web_fetch + GitHub API；详见同目录 [search-log.md](search-log.md)。
 - 图例：✅ 完整具备 ｜ ◐ 部分/近似/可扩展实现 ｜ ❌ 未具备 ｜ ⚠️ 未核实（本轮检索未能确认）。
-- 立场声明：本矩阵为 dsh-federation 对外新颖性主张的依据底稿，假定全世界会读到；所有"未发现"类结论均受检索窗口与语言覆盖（以中英文为主）限制。
+- 立场声明：本矩阵为 murmuration 对外新颖性主张的依据底稿，假定全世界会读到；所有"未发现"类结论均受检索窗口与语言覆盖（以中英文为主）限制。
 - 十个维度：①跨机/跨网络拓扑 ②协作底座（共享内存/消息总线/文件/平台）③长期性（常设组织 vs 单任务）④角色体系（含一机多岗？）⑤治理机制（手册/红线/事故驱动？）⑥交付完整性协议（sha256/通道纪律？）⑦值守/唤醒模式（turn-driven 值守？）⑧人在环（HITL 边界）⑨隐私边界纪律 ⑩真实运行证据（时长/规模）。
 
-## 参考行：dsh-federation（本项目实践）
+## 参考行：murmuration（本项目实践）
 
 | 系统 | ① | ② | ③ | ④ | ⑤ | ⑥ | ⑦ | ⑧ | ⑨ | ⑩ |
 |---|---|---|---|---|---|---|---|---|---|---|
-| **dsh-federation（5 机实践）** | ✅ 5 台异构机（Windows 工作站/云端服务器/局域网服务器/宿舍机/无外网机），互不开端口，经 ssh 隧道连共享上下文数据库 | ◐ 共享上下文数据库（OpenViking）为**唯一**协作底座 + room/ 文件协议（general.md + inbox/ + cursor/，append-only，mid 规范，>2KB 走 data 指针） | ✅ 常设组织（2026-10-22 建房起持续运行，跨任务存续） | ✅ 岗位制（diplomat/mechanic/editor/coordinator/research/ops）+ **一机多岗** | ✅ 版本化共享手册库 v1→v2.1.2（卷0 总则红线 R-01..R-15 / 卷1 经验 / 卷2 运维事故 / 卷3 协作分发）+ 主编制度 + ack 追踪 + 48h 催办 + 事故驱动红线演化 | ✅ R-15 交付协议：外交官统一外发、sha256+字节数、文件走既有通道、通知只给指针 | ✅ turn-driven 值守：DSH 会话非守护进程，靠 schedule 定时提醒唤醒（白天 1h/夜间 2h，分钟错峰） | ◐ 人在决策点拍板 + 红线授权边界（哪些事 agent 不得自行决定） | ◐ 隐私红线：个人敏感文件禁入共享库、二进制不入文本区 | ✅ 11 天真实运行、5 机、多起真实事故与恢复记录（手册库事故卷 I-001..I-013） |
+| **murmuration（5 机实践）** | ✅ 5 台异构机（Windows 工作站/云端服务器/局域网服务器/宿舍机/无外网机），互不开端口，经 ssh 隧道连共享上下文数据库 | ◐ 共享上下文数据库（OpenViking）为**唯一**协作底座 + room/ 文件协议（general.md + inbox/ + cursor/，append-only，mid 规范，>2KB 走 data 指针） | ✅ 常设组织（2026-10-22 建房起持续运行，跨任务存续） | ✅ 岗位制（diplomat/mechanic/editor/coordinator/research/ops）+ **一机多岗** | ✅ 版本化共享手册库 v1→v2.1.2（卷0 总则红线 R-01..R-15 / 卷1 经验 / 卷2 运维事故 / 卷3 协作分发）+ 主编制度 + ack 追踪 + 48h 催办 + 事故驱动红线演化 | ✅ R-15 交付协议：外交官统一外发、sha256+字节数、文件走既有通道、通知只给指针 | ✅ turn-driven 值守：DSH 会话非守护进程，靠 schedule 定时提醒唤醒（白天 1h/夜间 2h，分钟错峰） | ◐ 人在决策点拍板 + 红线授权边界（哪些事 agent 不得自行决定） | ◐ 隐私红线：个人敏感文件禁入共享库、二进制不入文本区 | ✅ 11 天真实运行、5 机、多起真实事故与恢复记录（手册库事故卷 I-001..I-013） |
 
 ## A. 单机多智能体编排框架（15）
 
@@ -100,7 +100,7 @@
 30. The Hive：任务书所指 "munder-difflin/the-hive" 仓库**未找到**（⚠️未核实）；最接近的同名项目为 tt-a1i/hive "Browser-native hive-mind for CLI coding agents" — https://github.com/tt-a1i/hive （⭐582）；另有 sreekar2403/hive 等
 31. Claude Code 官方 Agent Teams：编排多个 Claude Code 会话成团队（同机） — https://code.claude.com/docs/en/agent-teams
 32. Claude Code subagents（单机子代理，隔离上下文） — https://code.claude.com/docs/en/best-practices ⚠️（sub-agents 专页 URL 未直接核验）
-33. DeepSeek Harness 内置 Agent Teams（本实践所用单机团队机制，与 dsh-federation 的跨机联邦互补） — 官方页 https://www.deepseek.com/en/harness/ ；社区镜像 https://github.com/batata-wqx/deepseek-harness ⚠️（官方开源仓库地址未核实）
+33. DeepSeek Harness 内置 Agent Teams（本实践所用单机团队机制，与 murmuration 的跨机联邦互补） — 官方页 https://www.deepseek.com/en/harness/ ；社区镜像 https://github.com/batata-wqx/deepseek-harness ⚠️（官方开源仓库地址未核实）
 34. claude-squad 用 tmux/worktrees 并行管理多个 CLI coding agent — https://github.com/smtg-ai/claude-squad
 35. vibe-kanban 看板驱动多个 coding agent — https://github.com/BloopAI/vibe-kanban
 36. OpenClaw（原 Clawdbot/molt）个人 AI 助理常驻网关，"Any OS. Any Platform." — https://github.com/openclaw/openclaw （⭐393,706）
@@ -160,7 +160,7 @@
 
 ## 分维度小结（最接近的公开近邻）
 
-| 维度 | 公开近邻（最强者在前） | dsh-federation 是否独有 |
+| 维度 | 公开近邻（最强者在前） | murmuration 是否独有 |
 |---|---|---|
 | ①跨机拓扑 | AverNet / IoA / AgentScope / ANP / A2A | ❌ 不独有（但"个人异构机器联邦+互不开端口+含离线机"具体形态少见） |
 | ②协作底座 | Letta 共享记忆块、mcp-agent-mail 共享收件箱、claude-swarm 类共享文件 | ◐ "共享上下文数据库为唯一底座+room 文件协议"组合仍少见 |

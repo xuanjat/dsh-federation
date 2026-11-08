@@ -1,6 +1,6 @@
 # 04 · 值守节律：让 turn-driven 的会话"醒着"
 
-- 版本：1.0（dsh-federation MVP）
+- 版本：1.0（murmuration MVP）
 - 配套：[房间协议](../spec/room-protocol.md) §9 · [教训](06-lessons.md)
 
 ## 1. 现实约束：会话不会自己动

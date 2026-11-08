@@ -1,6 +1,6 @@
 # 交付协议规范（handoff manifest）
 
-- 版本：1.0（dsh-federation MVP）
+- 版本：1.0（murmuration MVP）
 - 一句话：**通知走房间，文件走既有通道，二进制永不进文本区。**
 - 配套：[房间协议](room-protocol.md) · [治理与分发](../docs/03-governance.md)
 

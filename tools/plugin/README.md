@@ -1,4 +1,4 @@
-# dsh-federation-tools（v0.3.0：MVP五工具+值守两件套）
+# murmuration-tools（v0.3.0：MVP五工具+值守两件套）
 
 DeepSeek Harness（DSH）host-only 插件包：把 [房间协议](../../spec/room-protocol.md) 与 [交付协议](../../spec/handoff-manifest.md) 的操作面变成 5 个 agent 工具。**零运行时依赖**（只用 node 内置 + harness 的 `defineTool`），**传输无关**：房间 = 一个 UTF-8 markdown 目录（本地镜像 / sshfs 挂载 / 共享库同步均可）。
 

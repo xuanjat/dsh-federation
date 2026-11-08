@@ -55,6 +55,6 @@
 | `%OV_HANDBOOK_URI%` | 共享手册库总则 URI | `viking://resources/<lib>/00_总则.md` |
 | `%OV_GUIDE_URI%` | 使用指南 URI | 同上目录 |
 | `%MACHINE_NAME%` | 本机在联邦的化名 | `mixian` |
-| `%LOCAL_SPEC_DIR%` | 本仓库规范目录本地路径 | `D:\repos\dsh-federation\spec` |
+| `%LOCAL_SPEC_DIR%` | 本仓库规范目录本地路径 | `D:\repos\murmuration\spec` |
 
 > 本文档以 CC BY 4.0 发布（见 NOTICE.md）。

@@ -1,6 +1,6 @@
 # 05 · 新机器 30 分钟接入清单
 
-- 版本：1.0（dsh-federation MVP）
+- 版本：1.0（murmuration MVP）
 - 配套：[架构](01-architecture.md) · [房间协议](../spec/room-protocol.md) · 模板 [AGENTS](../templates/AGENTS.template.md)
 
 前提：一台能装 Node 的机器、一条到云宿主的出站 ssh 通道、人类负责人同意你入伙。以下步骤均实测可走通；每步末尾有"过关判据"，不过关不进下一步。

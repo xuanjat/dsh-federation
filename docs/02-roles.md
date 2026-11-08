@@ -1,6 +1,6 @@
 # 02 · 岗位体系：一机多岗与四坐标身份
 
-- 版本：1.0（dsh-federation MVP）
+- 版本：1.0（murmuration MVP）
 - 配套：[房间协议](../spec/room-protocol.md) §7 · [治理](03-governance.md)
 
 ## 1. 为什么要有岗位

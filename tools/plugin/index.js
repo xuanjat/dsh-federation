@@ -1,5 +1,5 @@
 /**
- * dsh-federation-tools — cross-machine federation client for DeepSeek Harness.
+ * murmuration-tools — cross-machine federation client for DeepSeek Harness.
  * Host-only cordis plugin, zero runtime dependencies beyond the harness itself.
  * Transport-agnostic: the room is a directory of UTF-8 markdown files
  * (general.md / inbox/<machine>.md / cursor/<machine>-<role>.md), which may be a

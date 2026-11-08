@@ -1,6 +1,6 @@
 # 03 · 治理：手册库、主编制度与红线的演化
 
-- 版本：1.0（dsh-federation MVP）
+- 版本：1.0（murmuration MVP）
 - 配套：[交付协议](../spec/handoff-manifest.md) · [教训](06-lessons.md) · 红线模板 [redlines.template.md](../templates/redlines.template.md)
 
 ## 1. 治什么

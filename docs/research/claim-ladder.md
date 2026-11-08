@@ -1,4 +1,4 @@
-# dsh-federation 新颖性主张阶梯（claim-ladder）
+# murmuration 新颖性主张阶梯（claim-ladder）
 
 目的：给对外文案（README、文档、发言）提供一档"可辩护的新颖性口径"。规则：**所有等级都不得使用"首创/第一/唯一"式无限定断言**；凡涉新颖性一律带"据检索（2026-11）"限定；依据见 [novelty-matrix.md](novelty-matrix.md)，反方视角见 [adversarial-review.md](adversarial-review.md)。
 
@@ -44,6 +44,6 @@
 - **中文（README 新颖性/定位段，L2 修订版）**：
   > 据检索（2026-11），"跨机异构 agent 实例 + 以共享上下文数据库为本方案唯一协作底座 + 版本化治理手册 + 交付完整性协议 + turn-driven 值守节律 + 真实运行证据"这一组合，未发现完整同构的公开方案。各单项均有成熟近邻（见对标矩阵），本项目的贡献在于组合、协议与真实运行记录。
 - **英文（README 摘要，L3）**：
-  > dsh-federation documents and open-sources a working method for federating agent instances across heterogeneous personal machines — a room file protocol over a shared context database, a versioned governance handbook, a delivery-integrity protocol, and a turn-driven on-duty cadence — validated by 11 days of real multi-machine operation. It complements single-machine agent-team features (e.g., harness built-ins) rather than replacing them.
+  > murmuration documents and open-sources a working method for federating agent instances across heterogeneous personal machines — a room file protocol over a shared context database, a versioned governance handbook, a delivery-integrity protocol, and a turn-driven on-duty cadence — validated by 11 days of real multi-machine operation. It complements single-machine agent-team features (e.g., harness built-ins) rather than replacing them.
 - **被质疑时降档口径（L4）**：直接退到"我们不主张首创，主张可复用；对标矩阵公开接受修正（issue/PR 欢迎）"。
 - **维护要求**：README 附矩阵链接；每次有人提交新反例，先更新矩阵再决定是否降档；每季度复查 AverNet/ruflo/Claude Code 动向。

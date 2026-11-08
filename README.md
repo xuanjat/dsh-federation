@@ -1,9 +1,9 @@
 <h1 align="center">
-  <img src="assets/logo.svg" alt="dsh-federation 图标：简笔彩色歌姬像（沃雅妮莎风同人原创）" width="128" height="128"><br/>
-  dsh-federation
+  <img src="assets/logo.svg" alt="Murmuration 图标：简笔彩色椋鸟吉祥物（原创SVG）" width="128" height="128"><br/>
+  Murmuration 🐦
 </h1>
 
-> **跨机 DSH 多智能体联邦协作方法框架**
+> **跨机异构LLM-agent联邦协作方法框架** —— 如椋鸟群舞（murmuration）：无中心指挥、无中间件，一群独立agent靠一间纯文本房间协同。
 > **面向跨机异构多智能体的语义级协调/传输平面**：传*意图与引用*，不传载荷 —— 高效、低成本、异构、可审计。
 > A semantic-level coordination & transport plane for heterogeneous, cross-machine LLM-agent federations: it moves *intent and references*, not payloads.
 > Federated collaboration for multiple DeepSeek Harness (DSH) agent instances —
@@ -12,7 +12,7 @@
 >
 > **研究原型定位**：本项目是一个研究原型，旨在不同架构和多DSH框架下多智能体之间的互相协作或工作接力；相比传统的单会话执行，我们只用了极低的成本就完成了高效的部署和便捷的运行。与DeepSeek Harness团队同期提出的Super-agent架构（单层组织内Router/Worker双层+事件驱动）互补：我们解决的是跨机、跨框架实例之间的组织层协作（详见 [docs/superagent-comparison.md](docs/superagent-comparison.md)）。
 
-**English abstract** — Each machine runs its own AI agent instance, and none of them can (or should) open ports to each other. dsh-federation organizes such instances into a persistent, long-running team using only a shared context database (e.g. [OpenViking](https://docs.openviking.ai/)) as the collaboration substrate: an append-only "room" for messaging (public channel + per-machine inbox + per-role cursors), a role system with per-machine diplomats (一机多岗), a versioned operations handbook whose red lines are evolved from real incidents, a delivery protocol with sha256 integrity pointers, and a schedule-driven watch cadence designed for turn-based agents. This repository publishes the method as reusable specs, templates, a reference tool, and a sanitized 11-day / 5-machine case study. As of our search (2026-11), every individual mechanism has prior art; we did not find a public scheme isomorphic to this particular combination (see `docs/research/`).
+**English abstract** — Each machine runs its own AI agent instance, and none of them can (or should) open ports to each other. murmuration organizes such instances into a persistent, long-running team using only a shared context database (e.g. [OpenViking](https://docs.openviking.ai/)) as the collaboration substrate: an append-only "room" for messaging (public channel + per-machine inbox + per-role cursors), a role system with per-machine diplomats (一机多岗), a versioned operations handbook whose red lines are evolved from real incidents, a delivery protocol with sha256 integrity pointers, and a schedule-driven watch cadence designed for turn-based agents. This repository publishes the method as reusable specs, templates, a reference tool, and a sanitized 11-day / 5-machine case study. As of our search (2026-11), every individual mechanism has prior art; we did not find a public scheme isomorphic to this particular combination (see `docs/research/`).
 
 ## 解决什么问题
 
@@ -34,28 +34,7 @@
 
 ## 框架总览图
 
-```mermaid
-flowchart TB
-    subgraph NODES["异构节点 —— 彼此零端口开放 · 独立 DSH 实例 · 异构运行时"]
-        direction LR
-        N1["🖥️ Windows 工作站<br/>外交官 + 机械师"]
-        N2["☁️ 云端服务器<br/>主编 + 外交官"]
-        N3["🏠 局域网 / 宿舍机<br/>协调员 + 多岗"]
-        N4["🔌 无外网机<br/>人工中继接入"]
-    end
-
-    subgraph STORE["共享上下文数据库（如 OpenViking）—— 联邦唯一底座（本方案的架构选择）"]
-        subgraph SEM["语义层：穿越上下文，成本 O(头部 + 指针)"]
-            ROOM["房间 room/<br/>general.md append-only 频道<br/>inbox/机器.md 收件箱<br/>cursor/机器-岗位.md 游标"]
-            GOV["治理手册（四卷）<br/>总则红线 · 跨机经验<br/>事故档案 · 协作分发<br/>主编制 · ack 追踪"]
-            WATCH["值守节律<br/>schedule 驱动：白天 1h / 夜间 2h<br/>turn-based 非阻塞轮询"]
-        end
-        PAY["载荷层：恒在上下文之外<br/>文件 / 图件 / 千文件级交付<br/>仅以 路径+sha256+字节数 指针被引用"]
-    end
-
-    NODES <-->|"读写 UTF-8 文本<br/>ssh 隧道 · 本地挂载 · 人工中继"| ROOM
-    ROOM <-->|"data 消息 = 头部 + 指针<br/>上下文外 sha256 校验，仅一行 digest 回流"| PAY
-```
+![Murmuration框架总览：一间纯文本房间联邦异构节点；载荷恒在上下文之外](assets/figures/fig1-overview.png)
 
 > 读图：穿越上下文窗口的只有**语义层**（消息头部、指针、治理文本）；**载荷层**恒留在上下文之外。交付的逐步时序见 [docs/07-transport-model.md](docs/07-transport-model.md) 图 1。
 
@@ -70,7 +49,7 @@ agent 联邦的稀缺资源不是带宽，而是**上下文窗口**（长上下�
 - **异构零适配**：接入接口 = "经任意传输读写 UTF-8 文本"（ssh 隧道 / 本地 / 人工中继），与运行时、模型、OS、网络形态无关；无外网机经中继入联邦；
 - **时间触发值守**：turn-based agent 不能阻塞等待，按 time-triggered 架构（Kopetz 1991）定值守节律（白天 1h / 夜间 2h）。
 
-| 维度 | 消息队列（Kafka 类） | HTTP RPC（A2A 类） | 邮件/IM | **dsh-federation** |
+| 维度 | 消息队列（Kafka 类） | HTTP RPC（A2A 类） | 邮件/IM | **murmuration** |
 |---|---|---|---|---|
 | 额外基础设施 | broker 集群 | 服务+开端口+客户端库 | 第三方平台账号 | **0**（复用共享上下文库） |
 | 单次交付上下文成本 | O(载荷) | O(载荷) | O(载荷) | **O(头部+指针)** |
@@ -85,7 +64,7 @@ agent 联邦的稀缺资源不是带宽，而是**上下文窗口**（长上下�
 ## 仓库结构
 
 ```
-dsh-federation/
+murmuration/
 ├── README.md / README.en.md     你在这里
 ├── spec/                        房间协议、交付协议（机器可依循的规范）
 ├── docs/                        架构 / 岗位 / 治理 / 值守 / 接入 / 教训 / 传输模型(学术谱系+成本模型)
@@ -93,7 +72,7 @@ dsh-federation/
 ├── templates/                   AGENTS.md / HANDBOOK.md / 房间初始化 / 红线清单模板
 ├── reference/                   handbook.mjs 参考工具（生产环境在用）
 ├── case-study/                  11 天 / 5 台机器的脱敏运行案例
-├── assets/                      框架图标：简笔彩色歌姬像（原创 SVG，风格致敬公开角色设定）
+├── assets/                      框架图标：简笔彩色椋鸟吉祥物（原创 SVG）
 ├── paper/                       投稿级短文草稿（英文，含形式化定义与参考文献）
 └── tools/                       Phase A 插件：PLUGIN-ROADMAP + plugin/ 可安装 bundle 源码
 ```

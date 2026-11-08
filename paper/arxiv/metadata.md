@@ -1,4 +1,4 @@
-# arXiv投稿元数据（v1，2026-11-08）
+# arXiv投稿元数据（v2，2026-11-08；状态：暂缓——初稿发GitHub，署名tlf，疑问走GitHub comment）
 
 按arXiv提交表单逐项准备；【拍板】项需tlf确认后填写。
 
@@ -7,10 +7,10 @@
 | License | 【拍板】建议 CC BY 4.0（与仓库NOTICE一致；默认arXiv non-exclusive亦可） |
 | Primary category | cs.MA (Multiagent Systems) |
 | Cross lists | cs.DC (Distributed, Parallel, and Cluster Computing); cs.AI |
-| Title | dsh-federation: A Semantic-Level Coordination and Transport Plane for Heterogeneous Cross-Machine LLM-Agent Federations |
-| Authors | 【拍板】当前TeX内为 Lifeng Tian（arXiv要求真名，不接受化名；单位建议 Independent Researcher 或 China University of Geosciences (Wuhan)，二者选一；可加ORCID） |
+| Title | Murmuration: Federating LLM Agents Across Machines with Nothing but Text |
+| Authors | tlf（GitHub署名；**arXiv暂缓发布**——tlf 2026-11-08拍板：初稿只发GitHub，疑问走GitHub Issues/comment，不留邮箱；若日后投arXiv再按真名规则拍板） |
 | Abstract | 见 abstract.txt（纯文本，无TeX命令） |
-| Comments | 8 pages, 31 references; field study sanitized |
+| Comments | 8 pages, 1 figure, 31 references; field study sanitized; discussion via GitHub Issues |
 | ACM class | I.2.11（可选） |
 | Journal ref / DOI / Report number | 无 |
 

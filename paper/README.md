@@ -1,6 +1,6 @@
 # paper/ —— 投稿级短文草稿（中文说明）
 
-- **main.md**：英文短文草稿《dsh-federation: A Semantic-Level Coordination and Transport Plane for Heterogeneous Cross-Machine LLM-Agent Federations》。结构：摘要 / 引言（三动机：孤岛、上下文稀缺、远程 shell 红线）/ 设定与约束 / 房间工件与六条设计规则 R1-R6（每条可溯源到真实事故）/ 传输模型（定义 1-5 + 命题 1-3 及证明梗概 + MAST 对位声明为设计意图）/ 组织治理（角色、事故驱动手册、ack 义务、时间触发值守）/ 脱敏田野研究（5 机 11 天）/ 新颖性评估与主张阶梯（L2 口径）/ 局限 / 结论 / 参考文献 30 条。
+- **main.md**：英文短文草稿《murmuration: A Semantic-Level Coordination and Transport Plane for Heterogeneous Cross-Machine LLM-Agent Federations》。结构：摘要 / 引言（三动机：孤岛、上下文稀缺、远程 shell 红线）/ 设定与约束 / 房间工件与六条设计规则 R1-R6（每条可溯源到真实事故）/ 传输模型（定义 1-5 + 命题 1-3 及证明梗概 + MAST 对位声明为设计意图）/ 组织治理（角色、事故驱动手册、ack 义务、时间触发值守）/ 脱敏田野研究（5 机 11 天）/ 新颖性评估与主张阶梯（L2 口径）/ 局限 / 结论 / 参考文献 30 条。
 - **定位**：workshop / short paper 草稿；非实证评测论文——所有"效能"表述均为设计意图或存在性证据，正文已自我标注。
 - **转 LaTeX 建议**：ACL/IEEEtran 双栏模板均可；mermaid 图（README 与 docs/07）转 TikZ 或导出 PDF；公式已用行内 $...$ 与命题环境，迁移成本低。
 - **投稿前必做**：①参考文献逐条核对卷期页码（arXiv 条目核对最终发表版）；②补作者单位与 ORCID 占位；③按目标会议页数裁剪（当前约 4.5 页双栏当量）；④伦理与脱敏声明复核（机器名为化名，无真实 IP/人名/机构）。

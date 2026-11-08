@@ -1,7 +1,7 @@
 # 07 · 语义级协作传输模型：机制—学术谱系—成本模型
 
 > **Semantic-level Coordination & Transport Model**
-> dsh-federation 把"多 agent 之间的传输"定义在**语义层**：穿越 agent 上下文窗口的只有*意图（speech act）与引用（content-addressed pointer）*，载荷本体留在共享上下文数据库内、零入上下文。本文给出每个机制的学术谱系、形式化成本模型，以及与已知 LLM 多智能体失败 taxonomy 的对位。
+> murmuration 把"多 agent 之间的传输"定义在**语义层**：穿越 agent 上下文窗口的只有*意图（speech act）与引用（content-addressed pointer）*，载荷本体留在共享上下文数据库内、零入上下文。本文给出每个机制的学术谱系、形式化成本模型，以及与已知 LLM 多智能体失败 taxonomy 的对位。
 
 ## 1 问题定义：上下文窗口是信道，不是带宽
 
@@ -33,7 +33,7 @@ sequenceDiagram
 
 ## 2 机制—学术谱系对照
 
-| # | dsh-federation 机制 | 学术谱系 | 关键文献 |
+| # | murmuration 机制 | 学术谱系 | 关键文献 |
 |---|---|---|---|
 | 1 | 五种消息类型 ask/reply/note/data/ack | 言语行为理论 → agent 通信语言（ACL）最小 performative 集 | Searle 1969; KQML, Finin et al., CIKM 1994; FIPA-ACL Spec., 2002 |
 | 2 | 房间 = append-only 共享消息区 | 元组空间 / 黑板 / 发布订阅 | Linda, Gelernter, TOPLAS 1985; Blackboard, Nii, AI Magazine 1986; Pub/Sub, Eugster et al., ACM CS 2003 |
@@ -53,7 +53,7 @@ sequenceDiagram
 | 方案 | 单次交付的上下文成本 | 判新成本 | 千文件级交付 | 中继 k 跳 |
 |---|---|---|---|---|
 | 消息体进上下文（MQ/HTTP/邮件/IM） | T(P) | O(N) 全量重扫或依赖组件 | 附件/base64 进上下文，T(ΣP) | 每跳重付 T(P) |
-| **dsh-federation** | **T(H) = O(1)，与 P 无关** | **O(1)**（时间戳后缀比较） | **指针行 + 上下文外 sha256 布尔**，T(H) | **0 重复付费**（载荷不动，指针幂等） |
+| **murmuration** | **T(H) = O(1)，与 P 无关** | **O(1)**（时间戳后缀比较） | **指针行 + 上下文外 sha256 布尔**，T(H) | **0 重复付费**（载荷不动，指针幂等） |
 
 - 校验在上下文外完成（shell 内 sha256 逐文件比对），回流上下文的仅一行 digest/布尔 —— 验证成本从"读入再比对"降为"执行再读结论"。
 - 指针幂等：同一 sha256 的指针可被任意消费者重复解析而无需重传，交付对消费者数量不敏感（对比：每消费者单播重传）。

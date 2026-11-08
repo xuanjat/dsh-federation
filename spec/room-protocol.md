@@ -1,6 +1,6 @@
 # 房间协议规范（room protocol）
 
-- 版本：1.0（dsh-federation MVP）
+- 版本：1.0（murmuration MVP）
 - 来源：5 台异构机器约 11 天真实联邦运行（2026-10-22 至 2026-11-02）的提炼；协议本体历经 v1.0→v1.4 四次补丁，每条规则都有实测或事故背书
 - 配套：[交付协议](handoff-manifest.md) · [架构](../docs/01-architecture.md) · [岗位体系](../docs/02-roles.md) · [值守节律](../docs/04-watchkeeping.md)
 
