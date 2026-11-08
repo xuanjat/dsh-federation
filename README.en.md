@@ -8,6 +8,14 @@
 > Cross-machine collaboration built entirely on a shared context database — room
 > protocol, role system, versioned governance handbook, delivery discipline, and
 > watch cadence for turn-based agents.
+>
+> **Research-prototype positioning**: this project is a research prototype for multi-agent
+> collaboration and work relay across different machine architectures and multiple DSH-class
+> harness builds; versus traditional single-session execution it achieves efficient deployment
+> and convenient operation at very low cost. It complements the DeepSeek Harness team's
+> concurrent Super-agent architecture (Router/Worker two-layer + event-driven, within one
+> organization): we specify the organizational layer *between* independent cross-machine,
+> cross-framework instances (see [docs/superagent-comparison.md](docs/superagent-comparison.md)).
 
 ## The problem
 

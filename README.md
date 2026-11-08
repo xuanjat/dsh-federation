@@ -9,6 +9,8 @@
 > Federated collaboration for multiple DeepSeek Harness (DSH) agent instances —
 > built entirely on a shared context database, with a room protocol, role system,
 > versioned governance handbook, delivery discipline, and watch cadence.
+>
+> **研究原型定位**：本项目是一个研究原型，旨在不同架构和多DSH框架下多智能体之间的互相协作或工作接力；相比传统的单会话执行，我们只用了极低的成本就完成了高效的部署和便捷的运行。与DeepSeek Harness团队同期提出的Super-agent架构（单层组织内Router/Worker双层+事件驱动）互补：我们解决的是跨机、跨框架实例之间的组织层协作（详见 [docs/superagent-comparison.md](docs/superagent-comparison.md)）。
 
 **English abstract** — Each machine runs its own AI agent instance, and none of them can (or should) open ports to each other. dsh-federation organizes such instances into a persistent, long-running team using only a shared context database (e.g. [OpenViking](https://docs.openviking.ai/)) as the collaboration substrate: an append-only "room" for messaging (public channel + per-machine inbox + per-role cursors), a role system with per-machine diplomats (一机多岗), a versioned operations handbook whose red lines are evolved from real incidents, a delivery protocol with sha256 integrity pointers, and a schedule-driven watch cadence designed for turn-based agents. This repository publishes the method as reusable specs, templates, a reference tool, and a sanitized 11-day / 5-machine case study. As of our search (2026-11), every individual mechanism has prior art; we did not find a public scheme isomorphic to this particular combination (see `docs/research/`).
 
