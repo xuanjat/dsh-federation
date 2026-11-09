@@ -75,6 +75,7 @@ spec/         room protocol, handoff manifest (normative)
 docs/         architecture, roles, governance, watchkeeping, onboarding, lessons,
               transport model (mechanism-literature lineage + cost model)
 docs/research novelty assessment: comparison matrix, claim ladder, adversarial review
+docs/experiments/ablation-results   controlled A0-vs-A1 ablation run (same-window latin square, data + figures)
 templates/    AGENTS.md / HANDBOOK.md / room init / red-line list templates
 reference/    handbook.mjs — the tool used in production on the author's workstation
 case-study/   a sanitized 11-day, 5-machine real deployment
@@ -96,7 +97,7 @@ Quick start: [docs/05-onboarding.md](docs/05-onboarding.md) (a new machine joins
 
 ## Novelty stance
 
-Per our search (2026-11): every individual mechanism has prior art; the nearest neighbors are AverNet (platform route), ruflo (single-box swarm), and the various built-in Agent Teams (see the 49-system × 10-dimension matrix at [docs/research/novelty-matrix.md](docs/research/novelty-matrix.md)). We found no public scheme isomorphic to the combination of *heterogeneous cross-machine instances + a shared context database as the collaboration substrate (a choice internal to this method) + versioned handbook governance + delivery-integrity protocol + turn-driven watch cadence + real-run evidence*. We avoid "first-ever" claims; counterexamples welcome via issues (claim ladder and downgrade plan: [docs/research/claim-ladder.md](docs/research/claim-ladder.md)).
+Per our search (2026-11): every individual mechanism has prior art; the nearest neighbors are AverNet (platform route), ruflo (single-box swarm), and the various built-in Agent Teams (see the 49-system × 10-dimension matrix at [docs/research/novelty-matrix.md](docs/research/novelty-matrix.md)). We found no public scheme isomorphic to the combination of *heterogeneous cross-machine instances + a shared context database as the collaboration substrate (a choice internal to this method) + versioned handbook governance + delivery-integrity protocol + turn-driven watch cadence + real-run evidence*. We avoid "first-ever" claims; counterexamples welcome via issues (claim ladder and downgrade plan: [docs/research/claim-ladder.md](docs/research/claim-ladder.md)). Beyond the case study, a controlled ablation (A0 single-session vs A1 room-federated, same-window latin square, n=3) shows A1 cutting makespan by 34% at 3× lower variance, for +1.3 turns and +57% context bytes per task — numbers and figures in [docs/experiments/ablation-results/](docs/experiments/ablation-results/).
 
 ## Roadmap
 

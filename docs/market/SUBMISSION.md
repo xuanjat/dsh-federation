@@ -9,7 +9,7 @@ Plugin bundle: `tools/plugin` → published name **murmuration-tools** (v0.3.1, 
 fed_room_scan / fed_room_post / fed_cursor / fed_handoff_verify / fed_ack_board /
 fed_trigger_watch / fed_watchdog_note).
 
-Repo: https://github.com/xuanjat/dsh-federation (renaming to `murmuration`; old URLs redirect).
+Repo: https://github.com/xuanjat/murmuration (renaming to `murmuration`; old URLs redirect).
 
 ## 2. Catalog entry (format-1, per dshmarket index.json)
 
@@ -18,7 +18,7 @@ Repo: https://github.com/xuanjat/dsh-federation (renaming to `murmuration`; old 
   "name": "murmuration-tools",
   "version": "0.3.1",
   "description": "Seven room-protocol tools (scan/post/cursor/verify/ack board/trigger watch/watchdog note) that let DSH agents on multiple machines coordinate through a plain-text append-only store — pointers and digests in the room, payloads over the channels you already have.",
-  "repository": "https://github.com/xuanjat/dsh-federation",
+  "repository": "https://github.com/xuanjat/murmuration",
   "install": "dsh plugin --profile web add <path-to-repo>/tools/plugin",
   "keywords": ["multi-agent", "coordination", "federation", "agents", "protocol"]
 }

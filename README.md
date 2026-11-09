@@ -72,7 +72,8 @@ murmuration/
 ├── README.md / README.en.md     你在这里
 ├── spec/                        房间协议、交付协议（机器可依循的规范）
 ├── docs/                        架构 / 岗位 / 治理 / 值守 / 接入 / 教训 / 传输模型(学术谱系+成本模型)
-│   └── research/                新颖性评估：对标矩阵、主张阶梯、反方审查、检索日志
+│   ├── research/                新颖性评估：对标矩阵、主张阶梯、反方审查、检索日志
+│   └── experiments/ablation-results/  A0 vs A1受控消融实测（同窗拉丁方，数据+图件）
 ├── templates/                   AGENTS.md / HANDBOOK.md / 房间初始化 / 红线清单模板
 ├── reference/                   handbook.mjs 参考工具（生产环境在用）
 ├── case-study/                  11 天 / 5 台机器的脱敏运行案例
