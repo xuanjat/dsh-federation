@@ -10,7 +10,7 @@
 | Title | Murmuration: Federating LLM Agents Across Machines with Nothing but Text |
 | Authors | tlf（GitHub署名；**arXiv暂缓发布**——tlf 2026-11-08拍板：初稿只发GitHub，疑问走GitHub Issues/comment，不留邮箱；若日后投arXiv再按真名规则拍板） |
 | Abstract | 见 abstract.txt（纯文本，无TeX命令） |
-| Comments | 9 pages, 1 figure, 31 references; field study sanitized; discussion via GitHub Issues |
+| Comments | 11 pages, 1 figure, 31 references; field study sanitized; discussion via GitHub Issues |
 | ACM class | I.2.11（可选） |
 | Journal ref / DOI / Report number | 无 |
 
