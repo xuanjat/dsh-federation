@@ -251,6 +251,11 @@ re: <mid>            # mandatory for reply
 <body, or pointer lines for type=data>
 \end{verbatim}
 
+\textbf{Field authority.} \texttt{mid} is the sole authority for
+identity, ordering, and deduplication; the human-readable \texttt{ts}
+header is advisory metadata for human audit and may drift under clock
+skew --- consumers never compare \texttt{ts} values (cf. §8(iv)).
+
 Design rules distilled from the field study; several are direct patches
 for recorded incidents (§6):
 
@@ -426,6 +431,18 @@ computable from the logs alone and drives the watch turns.
 (day/night tiers), and each watch turn is a fixed checklist: scan
 cursors, discharge obligations, update the board, escalate staleness.
 
+\textbf{Recovery.} All organizational state is rebuildable from the logs
+alone. A lost or corrupted cursor is repaired by rescanning its channel
+from the first message and re-deriving the last-consumed identifier; the
+duplicate re-dispatch this may cause is harmless because acknowledgment
+discharge is idempotent per referent (an \texttt{ack} naming an
+already-discharged \texttt{mid} is a no-op), so recovery costs one
+linear scan and never payload re-verification unless a digest is
+re-challenged. A restarted watcher resumes from its cursor file; if that
+file is missing too, it adopts the channel tail only after posting a
+human-visible \texttt{note} announcing the reset, so the operator can
+veto silent state loss.
+
 \hypertarget{field-study-sanitized}{%
 \subsection{6. Field Study (sanitized)}\label{field-study-sanitized}}
 
@@ -595,7 +612,8 @@ reusable artifact for anyone running personal agent federations.
   agent communication language. In \emph{Proceedings of CIKM '94}. ACM.
 \item
   FIPA (2002). \emph{FIPA Communicative Act Library Specification},
-  SC00037.
+  document no. SC00037F. Foundation for Intelligent Physical Agents.
+  http://www.fipa.org/specs/fipa00037/.
 \item
   Gelernter, D. (1985). Generative communication in Linda. \emph{ACM
   TOPLAS}, 7(1).
@@ -635,8 +653,10 @@ reusable artifact for anyone running personal agent federations.
   Arcos, J. L. (2001). On the formal specification of electronic
   institutions. \emph{AMEC III}, Springer.
 \item
-  Hübner, J. F., Sichman, J. S., \& Boissier, O. (2013).
-  \emph{Organizing Multi-Agent Systems}. Springer.
+  Hübner, J. F., Sichman, J. S., \& Boissier, O. (2007). Moise+: towards
+  a structural, functional, and deontic model for multi-agent
+  organizations. \emph{International Journal of Agent-Oriented Software
+  Engineering}, 1(3/4), 93--128.
 \item
   Singh, M. P. (1999). An ontology for commitments in multiagent
   systems. \emph{Artificial Intelligence and Law}, 7(1).
@@ -683,8 +703,11 @@ reusable artifact for anyone running personal agent federations.
   orchestration with hierarchical memory}.
   https://github.com/ruvnet/ruflo (repository, accessed 2026-11).
 \item
-  DeepSeek (2026). \emph{deepseek-harness} and its built-in single-host
-  Agent Teams; OpenViking shared context database.
+  DeepSeek (2026). \emph{DeepSeek Harness (DSH)} --- a local-first
+  LLM-agent harness with built-in single-host Agent Teams --- and
+  \emph{OpenViking}, its shared context database. npm package
+  \texttt{@deepseek-ai/dsh}:
+  https://www.npmjs.com/package/@deepseek-ai/dsh (accessed 2026-11).
 \item
   DeepSeek Harness Team (2026). {[}Super-agent design exploration:
   toward more autonomous agent systems{]} (architecture exploration

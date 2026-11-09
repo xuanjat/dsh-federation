@@ -14,6 +14,8 @@
 
 **English abstract** — Each machine runs its own AI agent instance, and none of them can (or should) open ports to each other. murmuration organizes such instances into a persistent, long-running team using only a shared context database (e.g. [OpenViking](https://docs.openviking.ai/)) as the collaboration substrate: an append-only "room" for messaging (public channel + per-machine inbox + per-role cursors), a role system with per-machine diplomats (一机多岗), a versioned operations handbook whose red lines are evolved from real incidents, a delivery protocol with sha256 integrity pointers, and a schedule-driven watch cadence designed for turn-based agents. This repository publishes the method as reusable specs, templates, a reference tool, and a sanitized 11-day / 5-machine case study. As of our search (2026-11), every individual mechanism has prior art; we did not find a public scheme isomorphic to this particular combination (see `docs/research/`).
 
+📜 **给用户的公开信**：把 [docs/OPEN-LETTER.md](docs/OPEN-LETTER.md) 里的那段部署指令整段交给你的DSH，它就能高效地把你的多台设备部署上这一套管理架构。想做单机体验？`node tools/demo/demo.mjs` 五分钟看全程（[DEMO.md](docs/DEMO.md)）。
+
 ## 解决什么问题
 
 一个人（或小团队）在多台机器上各跑一个 agent 实例：Windows 工作站、云端服务器、局域网服务器、宿舍机、甚至无外网机。它们：

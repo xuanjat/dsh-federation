@@ -57,6 +57,8 @@ re: <mid>            # mandatory for reply
 <body, or pointer lines for type=data>
 ```
 
+**Field authority.** `mid` is the sole authority for identity, ordering, and deduplication; the human-readable `ts` header is advisory metadata for human audit and may drift under clock skew — consumers never compare `ts` values (cf. §8(iv)).
+
 Design rules distilled from the field study; several are direct patches for recorded incidents (§6):
 
 - **R1 (append-only).** Logs are never rewritten; corrections are new messages. Provenance is structural.
@@ -113,6 +115,8 @@ Transport without governance decays: roles blur, obligations lapse, lessons evap
 
 **Time-triggered watchkeeping.** Because agents cannot block (Definition 5), liveness is a schedule. Cadence is a policy parameter (day/night tiers), and each watch turn is a fixed checklist: scan cursors, discharge obligations, update the board, escalate staleness.
 
+**Recovery.** All organizational state is rebuildable from the logs alone. A lost or corrupted cursor is repaired by rescanning its channel from the first message and re-deriving the last-consumed identifier; the duplicate re-dispatch this may cause is harmless because acknowledgment discharge is idempotent per referent (an `ack` naming an already-discharged `mid` is a no-op), so recovery costs one linear scan and never payload re-verification unless a digest is re-challenged. A restarted watcher resumes from its cursor file; if that file is missing too, it adopts the channel tail only after posting a human-visible `note` announcing the reset, so the operator can veto silent state loss.
+
 ## 6. Field Study (sanitized)
 
 Five heterogeneous machines (a Windows workstation, a cloud Linux server hosting the shared database, a LAN node, a dormitory node, and an offline node served by relay) ran the method for eleven elapsed days (2026-10-22 → 11-02; twelve calendar days inclusive). Machine names are pseudonyms; all identifiers, paths, and contents are sanitized.
@@ -151,7 +155,7 @@ murmuration suggests that a federation of independent, heterogeneous LLM agents 
 
 1. Searle, J. R. (1969). *Speech Acts: An Essay in the Philosophy of Language*. Cambridge University Press.
 2. Finin, T., Fritzson, R., McKay, D., & McEntire, R. (1994). KQML as an agent communication language. In *Proceedings of CIKM '94*. ACM.
-3. FIPA (2002). *FIPA Communicative Act Library Specification*, SC00037.
+3. FIPA (2002). *FIPA Communicative Act Library Specification*, document no. SC00037F. Foundation for Intelligent Physical Agents. http://www.fipa.org/specs/fipa00037/.
 4. Gelernter, D. (1985). Generative communication in Linda. *ACM TOPLAS*, 7(1).
 5. Nii, H. P. (1986). Blackboard systems. *AI Magazine*, 7(2).
 6. Eugster, P. Th., Felber, P. A., Guerraoui, R., & Kermarrec, A.-M. (2003). The many faces of publish/subscribe. *ACM Computing Surveys*, 35(2).
@@ -164,7 +168,7 @@ murmuration suggests that a federation of independent, heterogeneous LLM agents 
 13. Theraulaz, G., & Bonabeau, E. (1999). A brief history of stigmergy. *Artificial Life*, 5(2).
 14. Malone, T. W., & Crowston, K. (1994). The interdisciplinary study of coordination. *ACM Computing Surveys*, 26(1).
 15. Esteva, M., Rodríguez-Aguilar, J. A., Sierra, C., García, P., & Arcos, J. L. (2001). On the formal specification of electronic institutions. *AMEC III*, Springer.
-16. Hübner, J. F., Sichman, J. S., & Boissier, O. (2013). *Organizing Multi-Agent Systems*. Springer.
+16. Hübner, J. F., Sichman, J. S., & Boissier, O. (2007). Moise+: towards a structural, functional, and deontic model for multi-agent organizations. *International Journal of Agent-Oriented Software Engineering*, 1(3/4), 93–128.
 17. Singh, M. P. (1999). An ontology for commitments in multiagent systems. *Artificial Intelligence and Law*, 7(1).
 18. Guo, T., et al. (2024). Large language model based multi-agents: a survey of progress and challenges. *arXiv:2402.01680* (IJCAI 2024).
 19. Cemri, M., et al. (2025). Why do multi-agent LLM systems fail? *arXiv:2503.13657* (NeurIPS 2025 Datasets & Benchmarks).
@@ -178,5 +182,5 @@ murmuration suggests that a federation of independent, heterogeneous LLM agents 
 27. Linux Foundation (2025). *Agent2Agent (A2A) protocol specification*.
 28. inclusionAI (2026). *Avernet: infrastructure for persistent, organization-scale multi-agent systems*. https://github.com/inclusionAI/Avernet (repository documentation, accessed 2026-11).
 29. ruflo (formerly claude-flow) (2026). *Single-box agent swarm orchestration with hierarchical memory*. https://github.com/ruvnet/ruflo (repository, accessed 2026-11).
-30. DeepSeek (2026). *deepseek-harness* and its built-in single-host Agent Teams; OpenViking shared context database.
+30. DeepSeek (2026). *DeepSeek Harness (DSH)* — a local-first LLM-agent harness with built-in single-host Agent Teams — and *OpenViking*, its shared context database. npm package `@deepseek-ai/dsh`: https://www.npmjs.com/package/@deepseek-ai/dsh (accessed 2026-11).
 31. DeepSeek Harness Team (2026). [Super-agent design exploration: toward more autonomous agent systems] (architecture exploration article, 2026-11-01; prototype: dsh-superagent-prototype). Coverage: DoNews, https://www.donews.com/news/detail/1/6760986.html; PChome, https://article.pchome.net/news/16524.html (both 2026-11-01).

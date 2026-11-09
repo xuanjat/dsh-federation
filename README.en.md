@@ -17,6 +17,10 @@
 > organization): we specify the organizational layer *between* independent cross-machine,
 > cross-framework instances (see [docs/superagent-comparison.md](docs/superagent-comparison.md)).
 
+## 📮 Open letter: hand this to your DSH
+
+**[Read the open letter](docs/OPEN-LETTER.en.md)** — in short: paste its deployment block to your own DSH agent and it will stand this whole coordination architecture up across your machines, using nothing but the text files and transfer channels you already have. **[Single-box demo](docs/DEMO.md)** — one command, ~5 seconds, a full pointer-delivery round with no install.
+
 ## The problem
 
 One person (or a small team) runs an AI agent instance on each of several machines — a Windows workstation, a cloud server, a LAN server, a dorm machine, even an offline box. These instances:
