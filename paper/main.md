@@ -1,7 +1,7 @@
 # Murmuration: Federating LLM Agents Across Machines with Nothing but Text
 
-**Author:** tlf
-**Discussion:** questions and comments via GitHub Issues on this repository — no e-mail address is provided; open an issue instead.
+**Authors:** Lifeng Tian (corresponding author, xuanjat77@gmail.com) and Chengxu Han (chengxuhan0313@163.com).
+**Discussion:** questions and comments via GitHub Issues on this repository.
 **Status:** submission-grade draft (workshop / short-paper track); see `README.md` in this directory for conversion notes.
 **License:** CC BY 4.0 (docs), consistent with the repository NOTICE.
 

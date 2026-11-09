@@ -1,6 +1,6 @@
 # Murmuration: Federating LLM Agents Across Machines with Nothing but Text
 
-**Discussion:** questions and comments via GitHub Issues on this repository — no e-mail address is provided; open an issue instead.
+**Discussion:** questions and comments via GitHub Issues on this repository.
 
 
 ## Abstract
