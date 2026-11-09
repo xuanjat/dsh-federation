@@ -107,9 +107,9 @@ eleven-day (elapsed) field deployment across five heterogeneous machines
 archived incidents, deliveries of up to 1,300 files, each verified by
 per-file SHA-256 corruption checks) and a 49-system novelty assessment.
 Within the window the room carried 283 structured messages (mean 26/day,
-peak 49/day) --- 39 typed data deliveries, 27 asks, 87 acknowledgment
-discharges --- with more than three thousand per-file SHA-256 checks at
-byte equality and zero mismatches; payload content
+peak 49/day) --- 37 typed data deliveries, 29 asks, and 89
+acknowledgment discharges --- with more than three thousand per-file
+SHA-256 checks at byte equality and zero mismatches; payload content
 (scientific-experiment pipelines, document drafting, paper writing)
 never enters this paper, only counts and shapes. Per our search
 (2026-11), no public scheme combines all of: heterogeneous cross-machine
@@ -511,9 +511,9 @@ pseudonyms; all identifiers, paths, and contents are sanitized.
 \item
   \textbf{Volume (sanitized counts only):} 283 structured messages
   across one public channel, five machine inboxes and eighteen role
-  cursors during the window (mean 26/day, peak 49/day); 39 \texttt{data}
-  deliveries, 27 \texttt{ask}s, 87 \texttt{ack}/\texttt{reply}
-  discharges, 121 status notes, and 9 governance posts (four notices, a
+  cursors during the window (mean 26/day, peak 49/day); 37 \texttt{data}
+  deliveries, 29 \texttt{ask}s, 89 \texttt{ack}/\texttt{reply}
+  discharges, 120 status notes, and 8 governance posts (four notices, a
   request, an action marker, a report, a correction); more than three
   thousand per-file SHA-256 digests checked with byte equality in total,
   largest single manifest above 1,300 files.
@@ -545,6 +545,25 @@ written; per-rule exposure denominators are not separately metered, so
 these are narrative, not causal, claims. The full counterfactual tables
 and honesty caveats ship as a repository artifact
 (\texttt{docs/research/natural-ablation.md}).
+
+\begin{figure}
+\centering
+\includegraphics{figures/fig2-field-dashboard.pdf}
+\caption{\textbf{Field-study dashboard over the census window} (five
+machines, 2026-10-22 to 2026-11-02). \textbf{(a)} Daily
+structured-message volume by performative class (\(n=283\)); mean 26/day
+over active days, peak 49 on Oct 30; the pause day saw no posts.
+\textbf{(b)} Speech-act mix: 37 data deliveries, 29 asks, 89 ack/reply
+discharges, 120 notes, and 8 governance posts. \textbf{(c)} Producers by
+machine; the fifth machine ran offline and was served by a relay
+courier. \textbf{(d)} Message block sizes (\(n=265\) parsed blocks, log
+scale): coordination acts cost hundreds of bytes of context, while
+payload bytes move out-of-band. \textbf{(e)} Arrival-hour profile: 31
+turns occurred in the 00:00-07:00 night window under turn-driven
+watchkeeping. \textbf{(f)} Coverage across the ten dimensions of Section
+7 for the five nearest public systems (filled circle = full, half circle
+= partial, dash = absent); scores are dimension sums.}
+\end{figure}
 
 We report this as \emph{existence evidence} for operability, not as a
 controlled evaluation.
