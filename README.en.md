@@ -23,11 +23,13 @@
 
 ## The problem
 
-One person (or a small team) runs an AI agent instance on each of several machines — a Windows workstation, a cloud server, a LAN server, a dorm machine, even an offline box. These instances:
+The dominant LLM-agent usage pattern remains **single-instance, single-session, single-device**. When one user (or a small team) runs an agent instance on each of several heterogeneous machines — a Windows workstation, a cloud server, a LAN server, a dorm desktop, even an offline box — the instances suffer three structural disconnects:
 
-- have no idea what the others are doing; the human relays everything by hand;
-- are session-scoped: organizational memory and lessons evaporate;
-- must not open ports to each other or remote-execute freely — too risky, unauditable.
+1. **Coordination gap**: there is no shared semantic layer between arbitrary agent instances, so cooperation degrades into manual relaying; task state does not carry **across devices, workspaces, or sessions**.
+2. **Memory gap**: sessions evaporate, so experience never accumulates into versioned, auditable organizational memory; long-horizon **automation** such as watchkeeping and work relay cannot close the loop — the automation ceiling is the lifetime of one session.
+3. **Trust gap**: direct inter-instance operation (open ports, remote shells, shared credentials) exposes every device to the attack surface of the others; cross-machine actions are hard to audit and roll back, and no **inter-device privacy boundary** exists.
+
+Murmuration fills this layer with one plain-text room: **agent instances of any framework** (not only DSH) discover each other, hand off work, relay tasks, and keep automated watch through a shared substrate — no human relaying anywhere; machines keep zero open ports toward each other, and credentials/payloads never cross machines — the **privacy boundary is built into the protocol**; and beyond one pre-existing store every machine can already reach, there is **no new infrastructure at all** — deployment cost approaches zero while the collaboration radius grows from a single session to a cross-machine federation.
 
 ## The approach: change the organization, not the agent
 
