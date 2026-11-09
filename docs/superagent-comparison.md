@@ -1,8 +1,8 @@
 # Super-agent对照笔记（2026-11-08）
 
-> 来源：DeepSeek Harness官方团队《Super-agent设计探索：迈向更自主的Agent系统》（2026-11-01发布，原型插件dsh-superagent-prototype，"仅验证路线，非产品"）。
-> 报道核读：[DoNews](https://www.donews.com/news/detail/1/6760986.html)、[PChome](https://article.pchome.net/news/16524.html)；另见其沙盒基础设施论文DSec（arXiv，2026-09，单集群日跑300万沙盒、防AI"作弊"，与本文主题不同，仅备查）。
-> 本笔记用途：①功能对照（我们已有什么、缺什么）；②论文写作手法学习清单；③对插件路线与paper/main.md的修订输入。
+>来源：DeepSeek Harness官方团队《Super-agent设计探索：迈向更自主的Agent系统》（2026-11-01发布，原型插件dsh-superagent-prototype，"仅验证路线，非产品"）。
+>报道核读：[DoNews](https://www.donews.com/news/detail/1/6760986.html)、[PChome](https://article.pchome.net/news/16524.html)；另见其沙盒基础设施论文DSec（arXiv，2026-09，单集群日跑300万沙盒、防AI"作弊"，与本文主题不同，仅备查）。
+>本笔记用途：①功能对照（我们已有什么、缺什么）；②论文写作手法学习清单；③对插件路线与paper/main.md的修订输入。
 
 ## 一、Super-agent要点速记
 
@@ -21,7 +21,7 @@
 | 事件驱动Trigger+程序过滤+LLM判断 | 房间inbox append+值守节律轮询（白天1h/夜间2h）+schedule定时唤醒 | 我们是pull无push；无"规则过滤→LLM判断"两级流水线（插件可补，见路线） |
 | Thread订阅事件直通 | cursor/<机器>-<岗位>.md游标分账+inbox点对点 | 点对点通道已有但仍轮询消费 |
 | Inline & Spill | billion-context compress/decompress（窗外按需读）+手册索引find/show | 概念同族，我们已在会话内落地 |
-| 链式召回 | 消息re:字段+指针manifest+事故索引I-xxx互引 | 已有等价物，未命名传播 |
+| 链式召回 | 消息re:字段+指针manifest+事故索引I-xxx互引 | 已有等价物，尚未以同名机制传播 |
 | 异步ReAct/投机执行 | pwsh后台job、subagent、watcher自动补跑链（ch6实验c_watch/g2_chain/olmoe_chain） | DSH原生能力+我们的值守链已实践 |
 | 计算/状态/环境分离+BYOM | 跨机异构（Windows米线/云Linux云吞/局域网糯米/宿舍月饼/离线饭团）+ssh隧道+sshfs/scp-rsync通道+工作区映射 | 我们的核心强项：跨架构、跨框架实例联邦；他们限于单组织云+本地daemon |
 | Watchdog判断回路 | 值守节律+watcher聚合回拉+48小时升级规则 | 有实践；缺"模型判断Worker是否实质进展"的独立Watchdog会话 |
@@ -32,7 +32,7 @@
 
 ## 三、论文写作手法学习清单（对照其文风）
 
-1. 开场把瓶颈量化成可感事实（"3~5个活跃Session"）——动机不是形容词而是数字；我们可引该数+自家台账数（11天/5机/45经验/13事故）。
+1. 开场把瓶颈量化成可感事实（"3~5个活跃Session"）——动机不是形容词而是数字；我们可引该数与本库台账数（11天/5机/45经验/13事故）。
 2. 先立形态契约再讲架构：四特征逐条对应架构件（特征→机制映射表）；我们可在§1末加"联邦四性质↔五机制"小映射表（跨机异构/零基础设施/可审计/持久接力 ↔ 房间/指针/手册/值守）。
 3. 机制名词化命名（Inline & Spill、Chain of Recall、BYOM、Trigger/Thread）——可引用、可传播；我们已有Room/Pointer/Claim Ladder/Time-Triggered Watchkeeping，继续坚持命名纪律。
 4. 范围诚实自宣（原型"仅验证路线非产品"；实验"合成负载只评调度"）——我们的claim ladder与§8同族，保持并在对照处再声明一次口径差。
