@@ -16,6 +16,15 @@
 
 📜 **给用户的公开信**：把 [docs/OPEN-LETTER.md](docs/OPEN-LETTER.md) 里的那段部署指令整段交给你的DSH，它就能高效地把你的多台设备部署上这一套管理架构。想做单机体验？`node tools/demo/demo.mjs` 五分钟看全程（[DEMO.md](docs/DEMO.md)）。
 
+## 📄 论文 / Paper
+
+**Murmuration: Federating LLM Agents Across Machines with Nothing but Text**（IEEEtran journal 排版，8页3图，31条参考文献）
+→ [paper/arxiv/main.pdf](paper/arxiv/main.pdf)（PDF全文）· [paper/main.md](paper/main.md)（Markdown源）
+
+受控消融（同窗拉丁方，A0单会话 vs A1房间联邦，n=3）：联邦臂makespan −34%（215.0s→141.7s，方差低3倍），代价 +1.3 turns / +57% 上下文字节/任务，校验质量持平（18/18首过），36 run零人工干预零回退：
+
+![Controlled ablation: A0 single-session vs A1 room-federated — makespan, latency, context bytes, turns](paper/figures/fig3-ablation.png)
+
 ## 解决什么问题
 
 主流LLM agent使用范式仍以**单实例、单会话、单设备**为中心。当一位用户或小团队在多台异构设备上各自运行agent实例——Windows工作站、云端服务器、局域网服务器、宿舍终端、乃至无外网隔离机——实例之间存在三重结构性断裂：
@@ -78,7 +87,7 @@ murmuration/
 ├── reference/                   handbook.mjs 参考工具（生产环境在用）
 ├── case-study/                  11 天 / 5 台机器的脱敏运行案例
 ├── assets/                      框架图标：简笔彩色椋鸟吉祥物（原创 SVG）
-├── paper/                       投稿级短文草稿（英文，含形式化定义与参考文献）
+├── paper/                       论文（IEEEtran 8页3图 PDF + Markdown源，含形式化定义与参考文献）
 └── tools/                       Phase A 插件：PLUGIN-ROADMAP + plugin/ 可安装 bundle 源码
 ```
 
@@ -94,7 +103,7 @@ murmuration/
 
 ## 案例摘要（脱敏）
 
-2026-10-22至11-02，5台异构机器（Windows工作站 / 云端服务器 / 局域网服务器 / 宿舍机 / 无外网机）按本方法组成联邦：协议10天演化4个小版本；8类岗位、一机多岗普遍；四卷共享手册迭代至v2.1.2，45条跨机经验、13起归档事故；值守从"有事才看"制度化为白天每小时/夜间每2小时；期间完成多笔上千文件级交付（逐文件sha256校验）。详见 [case-study/timeline.md](case-study/timeline.md)。
+2026-10-22至11-02，5台异构机器（Windows工作站 / 云端服务器 / 局域网服务器 / 宿舍机 / 无外网机）按本方法组成联邦：协议10天演化4个小版本；8类岗位、一机多岗普遍；四卷共享手册迭代至v2.1.2，45条跨机经验、13起归档事故；值守从"有事才看"制度化为白天每小时/夜间每2小时；期间完成多笔上千文件级交付（逐文件sha256校验）；收窗后补做受控消融（A0单会话 vs A1联邦，同窗拉丁方n=3）：联邦臂makespan −34%、方差低3倍。详见 [case-study/timeline.md](case-study/timeline.md)。
 
 ## 与单机团队机制和平台方案的关系
 

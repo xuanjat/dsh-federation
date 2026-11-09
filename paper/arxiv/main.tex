@@ -1,129 +1,49 @@
-\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
-\PassOptionsToPackage{hyphens}{url}
-%
-\documentclass[11pt,]{article}
-\usepackage{lmodern}
+% Murmuration — IEEEtran journal draft (converted 2026-11-09; content = paper/main.md)
+% Build: pdflatex main.tex (x2). Discussion via GitHub Issues on github.com/xuanjat/murmuration.
+\documentclass[journal]{IEEEtran}
 \usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
-\usepackage{fixltx2e} % provides \textsubscript
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
-  \usepackage[T1]{fontenc}
-  \usepackage[utf8]{inputenc}
-  \usepackage{textcomp} % provides euro and other symbols
-\else % if luatex or xelatex
-  \usepackage{unicode-math}
-  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
-\fi
-% use upquote if available, for straight quotes in verbatim environments
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-% use microtype if available
-\IfFileExists{microtype.sty}{%
-\usepackage[]{microtype}
-\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
-}{}
-\IfFileExists{parskip.sty}{%
-\usepackage{parskip}
-}{% else
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{6pt plus 2pt minus 1pt}
-}
-\usepackage{hyperref}
-\hypersetup{
-            pdfborder={0 0 0},
-            breaklinks=true}
-\urlstyle{same}  % don't use monospace font for urls
-\usepackage[margin=1in]{geometry}
-\usepackage{graphicx,grffile}
-\makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-\setlength{\emergencystretch}{3em}  % prevent overfull lines
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{0}
-% Redefines (sub)paragraphs to behave more like sections
-\ifx\paragraph\undefined\else
-\let\oldparagraph\paragraph
-\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
-\fi
-\ifx\subparagraph\undefined\else
-\let\oldsubparagraph\subparagraph
-\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
-\fi
-
-% set default figure placement to htbp
-\makeatletter
-\def\fps@figure{htbp}
-\makeatother
-
-
-\author{tlf}
-\date{November 2026}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue,breaklinks=true]{hyperref}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\hyphenation{op-tical net-works semi-conduc-tor}
 
 \begin{document}
 
-\hypertarget{murmuration-federating-llm-agents-across-machines-with-nothing-but-text}{%
-\section{Murmuration: Federating LLM Agents Across Machines with Nothing
-but
-Text}\label{murmuration-federating-llm-agents-across-machines-with-nothing-but-text}}
+\title{Murmuration: Federating LLM Agents Across Machines with Nothing but Text}
+
+\author{tlf\thanks{Manuscript received November 2026. GitHub: \url{https://github.com/xuanjat/murmuration}.}}
+
+\markboth{Murmuration: Federating LLM Agents Across Machines with Nothing but Text}{}
+
+\maketitle
+
+\begin{abstract}
+Personal LLM-agent harnesses now run simultaneously on many heterogeneous machines (workstations, cloud servers, LAN boxes, offline nodes), yet each instance is a silo: its sessions, files, and learned lessons do not cross machine boundaries, and letting one agent operate another machine's shell is a security red line. We present \textbf{Murmuration}, a method framework that federates \emph{independent} agent instances through a single shared, plain-text context database, adding no broker or middleware beyond that store. Its core is a \textbf{semantic-level transport model}: messages carry only speech-act headers (five performatives), wire-level identities, and wall-clock timestamps; anything larger than a small threshold travels as a \textbf{content-addressed pointer} (path + SHA-256 + byte count) that is verified \emph{outside} any agent's context window. We formalize a message calculus and derive three cost properties --- design invariants implied by the payload threshold and the manifest discipline, not independently established empirical results: per-delivery context cost scales with the pointer list rather than payload bytes, and drops to a constant header when the manifest itself travels as a file; novelty detection is O(1) via fixed-width timestamp comparison; and k-hop relay never re-pays payload context, since pointer forwarding and digest verification are idempotent. Around the transport we specify organizational governance: a versioned, incident-driven handbook with red lines, role-scoped acknowledgment obligations, and time-triggered watchkeeping suited to turn-based agents. We report a sanitized eleven-day (elapsed) field deployment across five heterogeneous machines (protocol v1.0→v1.4, eight role types, 45 cross-machine lessons, 13 archived incidents, deliveries of up to 1,300 files, each verified by per-file SHA-256 corruption checks) and a 49-system novelty assessment. Within the window the room carried 283 structured messages (mean 26/day, peak 49/day) --- 37 typed data deliveries, 29 asks, and 89 acknowledgment discharges --- with more than three thousand per-file SHA-256 checks at byte equality and zero mismatches; payload content (scientific-experiment pipelines, document drafting, paper writing) never enters this paper, only counts and shapes. A controlled same-window ablation (three rounds x six abstracted tasks, Latin-square order) corroborates the field evidence: the federation arm cut makespan by 34\% with three-times-lower variance, at $+1.3$ turns and $+57\%$ context bytes per task, with verification parity (18/18 first pass per arm). Per our search (2026-11), no public scheme combines all of: heterogeneous cross-machine instances, a shared plain-text context database as the sole substrate, versioned incident-driven handbook governance, pointer-based delivery-integrity checks, turn-driven watchkeeping, and field evidence; we state claims at a deliberately conservative level.
+\end{abstract}
+
+\begin{IEEEkeywords}
+multi-agent systems, LLM agents, agent communication,
+\end{IEEEkeywords}
+
+
+
+\
+
 
 \textbf{Discussion:} questions and comments via GitHub Issues on this
 repository --- no e-mail address is provided; open an issue instead.
 
-\hypertarget{abstract}{%
-\subsection{Abstract}\label{abstract}}
 
-Personal LLM-agent harnesses now run simultaneously on many
-heterogeneous machines (workstations, cloud servers, LAN boxes, offline
-nodes), yet each instance is a silo: its sessions, files, and learned
-lessons do not cross machine boundaries, and letting one agent operate
-another machine's shell is a security red line. We present
-\textbf{Murmuration}, a method framework that federates
-\emph{independent} agent instances through a single shared, plain-text
-context database, adding no broker or middleware beyond that store. Its
-core is a \textbf{semantic-level transport model}: messages carry only
-speech-act headers (five performatives), wire-level identities, and
-wall-clock timestamps; anything larger than a small threshold travels as
-a \textbf{content-addressed pointer} (path + SHA-256 + byte count) that
-is verified \emph{outside} any agent's context window. We formalize a
-message calculus and derive three cost properties --- design invariants
-implied by the payload threshold and the manifest discipline, not
-independently established empirical results: per-delivery context cost
-scales with the pointer list rather than payload bytes, and drops to a
-constant header when the manifest itself travels as a file; novelty
-detection is O(1) via fixed-width timestamp comparison; and k-hop relay
-never re-pays payload context, since pointer forwarding and digest
-verification are idempotent. Around the transport we specify
-organizational governance: a versioned, incident-driven handbook with
-red lines, role-scoped acknowledgment obligations, and time-triggered
-watchkeeping suited to turn-based agents. We report a sanitized
-eleven-day (elapsed) field deployment across five heterogeneous machines
-(protocol v1.0→v1.4, eight role types, 45 cross-machine lessons, 13
-archived incidents, deliveries of up to 1,300 files, each verified by
-per-file SHA-256 corruption checks) and a 49-system novelty assessment.
-Within the window the room carried 283 structured messages (mean 26/day,
-peak 49/day) --- 37 typed data deliveries, 29 asks, and 89
-acknowledgment discharges --- with more than three thousand per-file
-SHA-256 checks at byte equality and zero mismatches; payload content
-(scientific-experiment pipelines, document drafting, paper writing)
-never enters this paper, only counts and shapes. Per our search
-(2026-11), no public scheme combines all of: heterogeneous cross-machine
-instances, a shared plain-text context database as the sole substrate,
-versioned incident-driven handbook governance, pointer-based
-delivery-integrity checks, turn-driven watchkeeping, and field evidence;
-we state claims at a deliberately conservative level.
 
-\textbf{Keywords:} multi-agent systems, LLM agents, agent communication,
+
 semantic communication, content addressing, coordination artifacts,
 organizational governance, field deployment.
 
-\hypertarget{introduction}{%
-\subsection{1. Introduction}\label{introduction}}
+
+
+\section{Introduction}
+
 
 A single developer or small team today routinely operates several
 LLM-agent instances {[}1{]}: one on a laptop, one on a cloud server, one
@@ -200,8 +120,10 @@ and time-triggered watchkeeping for turn-based agents (§5). (iv) A
 sanitized counts (five machines, eleven days) --- plus a 49-system ×
 10-dimension novelty assessment with an explicit claim ladder (§6, §7).
 
-\hypertarget{setting-and-constraints}{%
-\subsection{2. Setting and Constraints}\label{setting-and-constraints}}
+
+
+\section{Setting and Constraints}
+
 
 \textbf{Agents.} Each node is a turn-based LLM-agent harness. All five
 field nodes run DeepSeek Harness (DSH) builds {[}9{]}; the protocol
@@ -229,9 +151,10 @@ control; see §8). Credentials never appear in the shared substrate.
 reachability, and uptime. The only required capability is reading and
 writing UTF-8 text files.
 
-\hypertarget{the-room-coordination-artifact-as-transport}{%
-\subsection{3. The Room: Coordination Artifact as
-Transport}\label{the-room-coordination-artifact-as-transport}}
+
+
+\section{The Room: Coordination Artifact as Transport}
+
 
 The federation's coordination state lives in a \emph{room}: a directory
 of append-only Markdown logs.
@@ -306,9 +229,9 @@ constraints (§6):
   entirely.
 \end{itemize}
 
-\begin{figure}
+\begin{figure*}
 \centering
-\includegraphics{figures/fig1-overview.pdf}
+\includegraphics[width=\textwidth]{figures/fig1-overview.pdf}
 \caption{\textbf{Figure 1.} Murmuration at a glance. (a) Heterogeneous
 nodes coordinate through one shared plain-text store --- public log,
 per-machine inboxes, per-role cursors --- under a versioned governance
@@ -316,11 +239,12 @@ handbook and time-triggered watchkeeping; payloads never enter the store
 and move over pre-existing point-to-point channels. (b) Pointer-delivery
 lifecycle: manifests and digests travel as text inside the context
 budget; files are fetched out-of-band and verified shell-side.}
-\end{figure}
+\end{figure*}
 
-\hypertarget{semantic-level-transport-model}{%
-\subsection{4. Semantic-Level Transport
-Model}\label{semantic-level-transport-model}}
+
+
+\section{Semantic-Level Transport Model}
+
 
 \hypertarget{message-calculus}{%
 \subsubsection{4.1 Message calculus}\label{message-calculus}}
@@ -434,9 +358,10 @@ exactly the distinction the L2 claim (§7) rests on. The combination ---
 and its reduction to \emph{plain files} as the universal narrow waist
 --- is what we contribute.
 
-\hypertarget{organizational-governance}{%
-\subsection{5. Organizational
-Governance}\label{organizational-governance}}
+
+
+\section{Organizational Governance}
+
 
 Transport without governance decays: roles blur, obligations lapse,
 lessons evaporate. Murmuration specifies four instruments, in the
@@ -482,8 +407,10 @@ file is missing too, it adopts the channel tail only after posting a
 human-visible \texttt{note} announcing the reset, so the operator can
 veto silent state loss.
 
-\hypertarget{field-study-sanitized}{%
-\subsection{6. Field Study (sanitized)}\label{field-study-sanitized}}
+
+
+\section{Field Study (sanitized)}
+
 
 Five heterogeneous machines (a Windows workstation, a cloud Linux server
 hosting the shared database, a LAN node, a dormitory node, and an
@@ -546,9 +473,9 @@ these are narrative, not causal, claims. The full counterfactual tables
 and honesty caveats ship as a repository artifact
 (\texttt{docs/research/natural-ablation.md}).
 
-\begin{figure}
+\begin{figure*}
 \centering
-\includegraphics{figures/fig2-field-dashboard.pdf}
+\includegraphics[width=\textwidth]{figures/fig2-field-dashboard.pdf}
 \caption{\textbf{Field-study dashboard over the census window} (five
 machines, 2026-10-22 to 2026-11-02). \textbf{(a)} Daily
 structured-message volume by performative class (\(n=283\)); mean 26/day
@@ -563,21 +490,30 @@ turns occurred in the 00:00-07:00 night window under turn-driven
 watchkeeping. \textbf{(f)} Coverage across the ten dimensions of Section
 7 for the five nearest public systems (filled circle = full, half circle
 = partial, dash = absent); scores are dimension sums.}
-\end{figure}
+\end{figure*}
 
 We report this as \emph{existence evidence} for operability, not as a
 controlled evaluation.
+
+\textbf{A controlled ablation (2026-11-09).} To separate the contribution of the coordination substrate from task or model effects, we ran a controlled A0-vs-A1 ablation: six abstracted tasks, three rounds each, executed by the same model and harness either as a single session (A0) or as a two-agent federation over the room protocol (A1), in one continuous time window with a Latin-square arm order (R1 A0 first, R2 A1 first, R3 A0 first). All 36 runs completed with zero human interventions and zero runner fallback; every artifact passed verification on first attempt (18/18 per arm). The federation arm cut makespan by 34\% (215.0~s to 141.7~s per round, $1.52\times$; lower in every round, with three-times-lower range variance), at the price of $+1.3$ turns and $+57\%$ context bytes per task ($1{,}908$ to $2{,}992$~B, dominated by room-pointer reads of $1{,}439$~B per task against a $\approx$2~KB payload). The pointer overhead is payload-scale-dependent, so the economy argument of Section~4 remains open for larger payloads; verification quality was parity (first pass 18/18 in both arms). With $n=3$ rounds we claim no significance; per-round numbers and the byte-class breakdown ship as a repository artifact (\texttt{docs/experiments/ablation-results/}).
+
+\begin{figure*}
+\centering
+\includegraphics[width=\textwidth]{figures/fig3-ablation.pdf}
+\caption{\textbf{Controlled ablation, A0 single-session vs.\ A1 room-federated} (same-window Latin square, $n=3$; zero interventions, zero fallback). \textbf{(a)} E1: makespan per round; A1 is lower in every round (means 141.7 vs.\ 215.0~s, $1.52\times$ / 34\% faster, 3$\times$ lower variance). \textbf{(b)} E2: per-task latency (mean of $n=3$); A1 includes room-acknowledgment queueing. \textbf{(c)} E3: context bytes read per task by class; A1's pointer reads (1,439~B/task) exceed its payload saving at this $\approx$2~KB payload scale, so H2 (context economy) is unsupported at small payloads. \textbf{(d)} E4: turns per round with room-message counts; the federation pays $+1.3$ turns and 57 room messages (H3, coordination overhead, supported). Verification parity: first pass 18/18 per arm (H4). No significance test is claimed at $n=3$.}
+\end{figure*}
 
 \textbf{Artifact availability.} The framework source, plugin tools, and
 the research artifacts behind §7 --- the 49-system × 10-dimension
 novelty matrix, the search log, the adversarial re-review, and the claim
 ladder --- ship in the public repository accompanying this paper
-(github.com/xuanjat/Murmuration, under \texttt{docs/research/});
+(github.com/xuanjat/murmuration, under \texttt{docs/research/} and \texttt{docs/experiments/});
 documentation is licensed CC BY 4.0.
 
-\hypertarget{novelty-assessment-and-claim-ladder}{%
-\subsection{7. Novelty Assessment and Claim
-Ladder}\label{novelty-assessment-and-claim-ladder}}
+
+
+\section{Novelty Assessment and Claim Ladder}
+
 
 We compared 49 systems across 10 dimensions --- (1)
 cross-machine/network topology, (2) coordination substrate, (3)
@@ -651,8 +587,10 @@ cross-machine topology (dimension 1: every surveyed scheme already
 federates machines in some form) and human-in-the-loop boundaries
 (dimension 8: standard interrupt/approval support).
 
-\hypertarget{limitations}{%
-\subsection{8. Limitations}\label{limitations}}
+
+
+\section{Limitations}
+
 
 No push delivery (polling only); no server-side deduplication or
 permission isolation in the substrate (compensated by cursor discipline
@@ -706,8 +644,10 @@ the relay-served offline node's clock is not NTP-disciplined, so its
 messages can be judged stale by R3 comparisons; the skew assumption of
 (iv) is unverified for that node.
 
-\hypertarget{conclusion}{%
-\subsection{9. Conclusion}\label{conclusion}}
+
+
+\section{Conclusion}
+
 
 Murmuration suggests that a federation of independent, heterogeneous LLM
 agents can be coordinated in the coordination plane with \emph{nothing
@@ -720,122 +660,104 @@ deployment indicates that the design is not merely implementable on
 paper but operable in sustained use, and its incident-driven rule set is
 a reusable artifact for anyone running personal agent federations.
 
-\hypertarget{references}{%
-\subsection{References}\label{references}}
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Guo, T., et al. (2024). Large language model based multi-agents: a
-  survey of progress and challenges. \emph{arXiv:2402.01680} (IJCAI
-  2024).
-\item
-  Zhang, Z., et al. (2024). A survey on the memory mechanism of large
-  language model based agents. \emph{arXiv:2404.13501}.
-\item
-  Liu, N. F., et al. (2024). Lost in the middle: how language models use
-  long contexts. \emph{TACL} (arXiv:2307.03172).
-\item
-  Chen, L., Zaharia, M., \& Zou, J. (2023). FrugalGPT: how to use large
-  language models while reducing cost and improving performance.
-  \emph{arXiv:2305.05176}.
-\item
-  Wu, Q., et al. (2023). AutoGen: enabling next-gen LLM applications via
-  multi-agent conversation. \emph{arXiv:2308.08155}.
-\item
-  Hong, S., et al. (2023). MetaGPT: meta programming for a multi-agent
-  collaborative framework. \emph{arXiv:2308.00352}.
-\item
-  Qian, C., et al. (2023). Communicative agents for software
-  development. \emph{arXiv:2307.07924}.
-\item
-  ruflo (formerly claude-flow) (2026). \emph{Single-box agent swarm
-  orchestration with hierarchical memory}.
-  https://github.com/ruvnet/ruflo (repository, accessed 2026-11).
-\item
-  DeepSeek (2026). \emph{DeepSeek Harness (DSH)} --- a local-first
-  LLM-agent harness with built-in single-host Agent Teams --- and
-  \emph{OpenViking}, its shared context database. npm package
-  \texttt{@deepseek-ai/dsh}:
-  https://www.npmjs.com/package/@deepseek-ai/dsh (accessed 2026-11).
-\item
-  Linux Foundation (2025). \emph{Agent2Agent (A2A) protocol
-  specification}.
-\item
-  inclusionAI (2026). \emph{Avernet: infrastructure for persistent,
-  organization-scale multi-agent systems}.
-  https://github.com/inclusionAI/Avernet (repository documentation,
-  accessed 2026-11).
-\item
-  DeepSeek Harness Team (2026). \emph{Super-agent design exploration:
-  toward more autonomous agent systems} (in Chinese) (architecture
-  exploration article, 2026-11-01; prototype: dsh-superagent-prototype).
-  Coverage: DoNews, https://www.donews.com/news/detail/1/6760986.html;
-  PChome, https://article.pchome.net/news/16524.html (both 2026-11-01).
-\item
-  Cemri, M., et al. (2025). Why do multi-agent LLM systems fail?
-  \emph{arXiv:2503.13657} (NeurIPS 2025 Datasets \& Benchmarks).
-\item
-  Searle, J. R. (1969). \emph{Speech Acts: An Essay in the Philosophy of
-  Language}. Cambridge University Press.
-\item
-  Finin, T., Fritzson, R., McKay, D., \& McEntire, R. (1994). KQML as an
-  agent communication language. In \emph{Proceedings of CIKM '94}. ACM.
-\item
-  FIPA (2002). \emph{FIPA Communicative Act Library Specification},
-  document no. SC00037F. Foundation for Intelligent Physical Agents.
-  http://www.fipa.org/specs/fipa00037/.
-\item
-  Gelernter, D. (1985). Generative communication in Linda. \emph{ACM
-  TOPLAS}, 7(1).
-\item
-  Nii, H. P. (1986). Blackboard systems. \emph{AI Magazine}, 7(2).
-\item
-  Eugster, P. Th., Felber, P. A., Guerraoui, R., \& Kermarrec, A.-M.
-  (2003). The many faces of publish/subscribe. \emph{ACM Computing
-  Surveys}, 35(2).
-\item
-  Kreps, J., Narkhede, N., \& Rao, J. (2011). Kafka: a distributed
-  messaging system for log processing. \emph{NetDB '11}.
-\item
-  Merkle, R. C. (1980). Protocols for public key cryptosystems.
-  \emph{IEEE Symposium on Security and Privacy}.
-\item
-  Benet, J. (2014). IPFS --- content addressed, versioned, P2P file
-  system. \emph{arXiv:1407.3561}.
-\item
-  Moreau, L., et al. (2013). \emph{PROV-Overview: An Overview of the
-  PROV Family of Documents}. W3C.
-\item
-  Kopetz, H. (1991). Event-triggered versus time-triggered real-time
-  systems. In \emph{Operating Systems of the 90s and Beyond} (Dagstuhl
-  Seminar), LNCS 563. Springer.
-\item
-  Shannon, C. E., \& Weaver, W. (1949). \emph{The Mathematical Theory of
-  Communication}. University of Illinois Press.
-\item
-  Luo, J., Delfani, E., Salimnejad, M., \& Pappas, N. (2025). From
-  information freshness to semantics of information and goal-oriented
-  communications. \emph{arXiv:2512.12758}.
-\item
-  Theraulaz, G., \& Bonabeau, E. (1999). A brief history of stigmergy.
-  \emph{Artificial Life}, 5(2).
-\item
-  Malone, T. W., \& Crowston, K. (1994). The interdisciplinary study of
-  coordination. \emph{ACM Computing Surveys}, 26(1).
-\item
-  Esteva, M., Rodríguez-Aguilar, J. A., Sierra, C., García, P., \&
-  Arcos, J. L. (2001). On the formal specification of electronic
-  institutions. \emph{AMEC III}, Springer.
-\item
-  Hübner, J. F., Sichman, J. S., \& Boissier, O. (2007). Moise+: towards
-  a structural, functional, and deontic model for multi-agent
-  organizations. \emph{International Journal of Agent-Oriented Software
-  Engineering}, 1(3/4).
-\item
-  Singh, M. P. (1999). An ontology for commitments in multiagent
-  systems. \emph{Artificial Intelligence and Law}, 7(1).
-\end{enumerate}
+
+
+\begin{thebibliography}{31}
+
+\bibitem{r1}
+Guo, T., et al. (2024). Large language model based multi-agents: a survey of progress and challenges. \emph{arXiv:2402.01680} (IJCAI 2024).
+
+\bibitem{r2}
+Zhang, Z., et al. (2024). A survey on the memory mechanism of large language model based agents. \emph{arXiv:2404.13501}.
+
+\bibitem{r3}
+Liu, N. F., et al. (2024). Lost in the middle: how language models use long contexts. \emph{TACL} (arXiv:2307.03172).
+
+\bibitem{r4}
+Chen, L., Zaharia, M., \& Zou, J. (2023). FrugalGPT: how to use large language models while reducing cost and improving performance. \emph{arXiv:2305.05176}.
+
+\bibitem{r5}
+Wu, Q., et al. (2023). AutoGen: enabling next-gen LLM applications via multi-agent conversation. \emph{arXiv:2308.08155}.
+
+\bibitem{r6}
+Hong, S., et al. (2023). MetaGPT: meta programming for a multi-agent collaborative framework. \emph{arXiv:2308.00352}.
+
+\bibitem{r7}
+Qian, C., et al. (2023). Communicative agents for software development. \emph{arXiv:2307.07924}.
+
+\bibitem{r8}
+ruflo (formerly claude-flow) (2026). \emph{Single-box agent swarm orchestration with hierarchical memory}. https://github.com/ruvnet/ruflo (repository, accessed 2026-11).
+
+\bibitem{r9}
+DeepSeek (2026). \emph{DeepSeek Harness (DSH)} --- a local-first LLM-agent harness with built-in single-host Agent Teams --- and \emph{OpenViking}, its shared context database. npm package \texttt{@deepseek-ai/dsh}: https://www.npmjs.com/package/@deepseek-ai/dsh (accessed 2026-11).
+
+\bibitem{r10}
+Linux Foundation (2025). \emph{Agent2Agent (A2A) protocol specification}.
+
+\bibitem{r11}
+inclusionAI (2026). \emph{Avernet: infrastructure for persistent, organization-scale multi-agent systems}. https://github.com/inclusionAI/Avernet (repository documentation, accessed 2026-11).
+
+\bibitem{r12}
+DeepSeek Harness Team (2026). \emph{Super-agent design exploration: toward more autonomous agent systems} (in Chinese) (architecture exploration article, 2026-11-01; prototype: dsh-superagent-prototype). Coverage: DoNews, https://www.donews.com/news/detail/1/6760986.html; PChome, https://article.pchome.net/news/16524.html (both 2026-11-01).
+
+\bibitem{r13}
+Cemri, M., et al. (2025). Why do multi-agent LLM systems fail? \emph{arXiv:2503.13657} (NeurIPS 2025 Datasets \& Benchmarks).
+
+\bibitem{r14}
+Searle, J. R. (1969). \emph{Speech Acts: An Essay in the Philosophy of Language}. Cambridge University Press.
+
+\bibitem{r15}
+Finin, T., Fritzson, R., McKay, D., \& McEntire, R. (1994). KQML as an agent communication language. In \emph{Proceedings of CIKM '94}. ACM.
+
+\bibitem{r16}
+FIPA (2002). \emph{FIPA Communicative Act Library Specification}, document no. SC00037F. Foundation for Intelligent Physical Agents. http://www.fipa.org/specs/fipa00037/.
+
+\bibitem{r17}
+Gelernter, D. (1985). Generative communication in Linda. \emph{ACM TOPLAS}, 7(1).
+
+\bibitem{r18}
+Nii, H. P. (1986). Blackboard systems. \emph{AI Magazine}, 7(2).
+
+\bibitem{r19}
+Eugster, P. Th., Felber, P. A., Guerraoui, R., \& Kermarrec, A.-M. (2003). The many faces of publish/subscribe. \emph{ACM Computing Surveys}, 35(2).
+
+\bibitem{r20}
+Kreps, J., Narkhede, N., \& Rao, J. (2011). Kafka: a distributed messaging system for log processing. \emph{NetDB '11}.
+
+\bibitem{r21}
+Merkle, R. C. (1980). Protocols for public key cryptosystems. \emph{IEEE Symposium on Security and Privacy}.
+
+\bibitem{r22}
+Benet, J. (2014). IPFS --- content addressed, versioned, P2P file system. \emph{arXiv:1407.3561}.
+
+\bibitem{r23}
+Moreau, L., et al. (2013). \emph{PROV-Overview: An Overview of the PROV Family of Documents}. W3C.
+
+\bibitem{r24}
+Kopetz, H. (1991). Event-triggered versus time-triggered real-time systems. In \emph{Operating Systems of the 90s and Beyond} (Dagstuhl Seminar), LNCS 563. Springer.
+
+\bibitem{r25}
+Shannon, C. E., \& Weaver, W. (1949). \emph{The Mathematical Theory of Communication}. University of Illinois Press.
+
+\bibitem{r26}
+Luo, J., Delfani, E., Salimnejad, M., \& Pappas, N. (2025). From information freshness to semantics of information and goal-oriented communications. \emph{arXiv:2512.12758}.
+
+\bibitem{r27}
+Theraulaz, G., \& Bonabeau, E. (1999). A brief history of stigmergy. \emph{Artificial Life}, 5(2).
+
+\bibitem{r28}
+Malone, T. W., \& Crowston, K. (1994). The interdisciplinary study of coordination. \emph{ACM Computing Surveys}, 26(1).
+
+\bibitem{r29}
+Esteva, M., Rodríguez-Aguilar, J. A., Sierra, C., García, P., \& Arcos, J. L. (2001). On the formal specification of electronic institutions. \emph{AMEC III}, Springer.
+
+\bibitem{r30}
+Hübner, J. F., Sichman, J. S., \& Boissier, O. (2007). Moise+: towards a structural, functional, and deontic model for multi-agent organizations. \emph{International Journal of Agent-Oriented Software Engineering}, 1(3/4).
+
+\bibitem{r31}
+Singh, M. P. (1999). An ontology for commitments in multiagent systems. \emph{Artificial Intelligence and Law}, 7(1). 
+
+\end{thebibliography}
 
 \end{document}

@@ -1,6 +1,6 @@
-# murmuration-tools（v0.3.0：MVP五工具+值守两件套）
+# murmuration-tools（v0.3.2：MVP五工具+值守两件套）
 
-DeepSeek Harness（DSH）host-only插件包：把 [房间协议](../../spec/room-protocol.md) 与 [交付协议](../../spec/handoff-manifest.md) 的操作面变成5个agent工具。**零运行时依赖**（只用node内置 + harness的 `defineTool`），**传输无关**：房间 = 一个UTF-8 markdown目录（本地镜像 / sshfs挂载 / 共享库同步均可）。
+DeepSeek Harness（DSH）host-only插件包：把 [房间协议](../../spec/room-protocol.md) 与 [交付协议](../../spec/handoff-manifest.md) 的操作面变成5个agent工具。**零运行时依赖**（只用node内置，工具以纯对象直传 `ctx.tools.register`，不import任何harness内部模块），**传输无关**：房间 = 一个UTF-8 markdown目录（本地镜像 / sshfs挂载 / 共享库同步均可）。
 
 ## 工具一览
 
@@ -13,6 +13,11 @@ DeepSeek Harness（DSH）host-only插件包：把 [房间协议](../../spec/room
 | `fed_ack_board` | 义务看板两栏：inbound=欠我的ack/reply已清、我欠别人的data/ask；outbound_awaiting=我发出尚无人回执的；按时间排序带年龄 | O(看板行) |
 | `fed_trigger_watch` | 值守触发器（两级流水线一级）：按游标扫频道→规则过滤（type/收件人/关键词/超龄义务）→产出带reasons的触发候选，二级判断（act/defer/ignore）交给调用方LLM；可选顺手推进游标 | O(候选头部) |
 | `fed_watchdog_note` | 值守回执（Watchdog三态）：progress=实质进展 / deviation=偏离计划 / intervention=需人介入；append到 `cursor/<机器>-<岗位>.watch.md`（一岗一档），`recent` 读最近回执保持值守连续性 | O(回执行) |
+
+## Changelog
+
+- **v0.3.2**（2026-11-09）：修复插件激活失败的根因——删除`import { defineTool } from "@deepseek-ai/dsh-tools"`。profile的pnpm依赖树里没有`@deepseek-ai` scope，这个全场唯一的bare import让Loader图解析失败、整包"failed to import"被跳过（在役插件如`@michengai/dsh-skills-manager`均以纯对象直传`ctx.tools.register`，不import harness内部模块）。同时给`reg`加了`ctx.tools`存在性守卫。工具定义与行为零变化（烟测stub本就是恒等包装）。
+- v0.3.0→0.3.1：值守两件套（`fed_trigger_watch`/`fed_watchdog_note`）与参数守卫。
 
 ## 安装（DSH ≥0.2.1，cordis bundle）
 

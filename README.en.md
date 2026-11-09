@@ -86,9 +86,18 @@ tools/        Phase-A plugin: PLUGIN-ROADMAP + plugin/ installable bundle source
 
 Quick start: [docs/05-onboarding.md](docs/05-onboarding.md) (a new machine joins in ~30 minutes).
 
+## 📄 Paper
+
+**Murmuration: Federating LLM Agents Across Machines with Nothing but Text** (IEEEtran journal layout, 8 pages, 3 figures, 31 references)
+→ [paper/arxiv/main.pdf](paper/arxiv/main.pdf) (full PDF) · [paper/main.md](paper/main.md) (Markdown source)
+
+Controlled ablation (same-window Latin square, A0 single-session vs A1 room-federated, n=3): the federation arm cut makespan by 34% (215.0 s → 141.7 s, 3× lower variance) at the cost of +1.3 turns / +57% context bytes per task, with verification parity (18/18 first pass) and zero interventions or fallbacks across all 36 runs:
+
+![Controlled ablation: A0 single-session vs A1 room-federated — makespan, latency, context bytes, turns](paper/figures/fig3-ablation.png)
+
 ## Case study (sanitized)
 
-2026-10-22 → 11-02, five heterogeneous machines ran this method: the protocol evolved through 4 backward-compatible minor versions in 10 days; 8 role types with multi-role machines; a 4-volume shared handbook iterated to v2.1.2 with 45 cross-machine lessons and 13 archived incidents; watch cadence institutionalized; multi-thousand-file deliveries completed with per-file sha256 verification. See [case-study/timeline.md](case-study/timeline.md).
+2026-10-22 → 11-02, five heterogeneous machines ran this method: the protocol evolved through 4 backward-compatible minor versions in 10 days; 8 role types with multi-role machines; a 4-volume shared handbook iterated to v2.1.2 with 45 cross-machine lessons and 13 archived incidents; watch cadence institutionalized; multi-thousand-file deliveries completed with per-file sha256 verification; a post-window controlled ablation (A0 vs A1, same-window Latin square, n=3) showed the federation arm at −34% makespan with 3× lower variance. See [case-study/timeline.md](case-study/timeline.md).
 
 ## Relation to single-machine teams and platform schemes
 

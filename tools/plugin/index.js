@@ -9,7 +9,6 @@
 import { createHash } from "node:crypto";
 import { readFile, writeFile, appendFile } from "node:fs/promises";
 import { join } from "node:path";
-import { defineTool } from "@deepseek-ai/dsh-tools";
 
 export const name = "fed-tools";
 export const inject = ["tools"];
@@ -78,9 +77,9 @@ export function apply(ctx, config = {}) {
   const guard = () => (!cfg.roomRoot ? { error: "fed-tools not configured: set roomRoot (and machine/role) in the plugin row config" } : null);
 
   const disposers = [];
-  const reg = (t) => { const d = ctx.tools.register(t); if (typeof d === "function") disposers.push(d); };
+  const reg = (t) => { if (!ctx.tools || typeof ctx.tools.register !== "function") return; const d = ctx.tools.register(t); if (typeof d === "function") disposers.push(d); };
 
-  reg(defineTool({
+  reg({
     name: "fed_room_scan",
     description: "Scan a federation room channel (general or a machine inbox) and return messages newer than this role's cursor. Novelty is decided by the fixed-width tail timestamp of each mid, never by full-string order.",
     parameters: {
@@ -97,9 +96,9 @@ export function apply(ctx, config = {}) {
       const lim = args.limit ?? 50;
       return { channel: args.channel, cursor: last || null, total: all.length, new_count: fresh.length, messages: fresh.slice(-lim) };
     },
-  }));
+  });
 
-  reg(defineTool({
+  reg({
     name: "fed_room_post",
     description: "Append one message to a federation room channel following the room protocol: mid = machine-role-YYYYMMDDTHHMMSS (seconds mandatory), five speech-act types, payloads over 2KB as sha256 pointers. Append-only; never rewrites history.",
     parameters: {
@@ -137,9 +136,9 @@ export function apply(ctx, config = {}) {
       await appendFile(file, block, "utf8");
       return { mid, channel: args.channel, appended: block.length };
     },
-  }));
+  });
 
-  reg(defineTool({
+  reg({
     name: "fed_cursor",
     description: "Read or advance this role's read cursor (cursor/<machine>-<role>.md, single line 'last_seen: <mid>'). One file per role: sharing a cursor across roles corrupts last_seen.",
     parameters: {
@@ -157,9 +156,9 @@ export function apply(ctx, config = {}) {
       await writeFile(p, `last_seen: ${args.value}\n`, "utf8");
       return { cursor: args.value };
     },
-  }));
+  });
 
-  reg(defineTool({
+  reg({
     name: "fed_handoff_verify",
     description: "Verify a delivery manifest OUT OF CONTEXT: hash each payload file on disk and compare sha256 and byte size against the pointer. Only the digest summary re-enters context; payloads never do. Remote (non-local) pointers are reported as skip.",
     parameters: {
@@ -191,9 +190,9 @@ export function apply(ctx, config = {}) {
       }
       return { verified: ok, mismatch, missing, skip, total: args.manifest.length, rows };
     },
-  }));
+  });
 
-  reg(defineTool({
+  reg({
     name: "fed_ack_board",
     description: "Build the obligation board in two columns: inbound = peer data/ask addressed to me or broadcast to general that I have not yet acked/replied; outbound_awaiting = my data/ask that nobody has acked/replied yet. Oldest first, with age in hours.",
     parameters: {},
@@ -223,9 +222,9 @@ export function apply(ctx, config = {}) {
         .map(row).sort(byTail);
       return { machine: cfg.machine, inbound_count: inbound.length, inbound, outbound_awaiting_count: outbound.length, outbound_awaiting: outbound };
     },
-  }));
+  });
 
-  reg(defineTool({
+  reg({
     name: "fed_trigger_watch",
     description: "Stage-1 of the two-stage watch trigger pipeline (pull-side approximation of push): scan channels for messages newer than this role's cursor, apply rule filters (type / addressed-to-me / keywords / stale obligations), and return compact trigger candidates with reasons. Stage-2 is the calling agent's LLM judgment: act | defer | ignore per candidate, then record the verdict with fed_watchdog_note. Payloads never enter context.",
     parameters: {
@@ -306,9 +305,9 @@ export function apply(ctx, config = {}) {
         cursor_advanced,
       };
     },
-  }));
+  });
 
-  reg(defineTool({
+  reg({
     name: "fed_watchdog_note",
     description: "Watchdog verdict receipt with the three-state schema: progress (substantive advance) | deviation (drift from plan) | intervention (human or peer action needed). 'log' appends one receipt to cursor/<machine>-<role>.watch.md (append-only, one file per role); 'recent' lists the latest receipts so the next watch turn keeps continuity.",
     parameters: {
@@ -340,7 +339,7 @@ export function apply(ctx, config = {}) {
       await appendFile(p, block, "utf8");
       return { mid, state: args.state, logged: block.length };
     },
-  }));
+  });
 
   ctx.effect(() => () => { for (const d of disposers) d(); disposers.length = 0; }, "fed-tools.dispose()");
 }
