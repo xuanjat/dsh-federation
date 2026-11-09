@@ -19,6 +19,10 @@ DeepSeek Harness（DSH）host-only插件包：把 [房间协议](../../spec/room
 - **v0.3.2**（2026-11-09）：修复插件激活失败的根因——删除`import { defineTool } from "@deepseek-ai/dsh-tools"`。profile的pnpm依赖树里没有`@deepseek-ai` scope，这个全场唯一的bare import让Loader图解析失败、整包"failed to import"被跳过（在役插件如`@michengai/dsh-skills-manager`均以纯对象直传`ctx.tools.register`，不import harness内部模块）。同时给`reg`加了`ctx.tools`存在性守卫。工具定义与行为零变化（烟测stub本就是恒等包装）。
 - v0.3.0→0.3.1：值守两件套（`fed_trigger_watch`/`fed_watchdog_note`）与参数守卫。
 
+## 沙盒测试
+
+完整测试蓝图（T1–T10矩阵、自建演示房间、已知坑与判活探针）见 [TESTING.md](TESTING.md)。
+
 ## 安装（DSH ≥0.2.1，cordis bundle）
 
 本目录即bundle（`package.json` 声明 `dsh.bundle.patch`）。两种已验证/设计内安装方式：
