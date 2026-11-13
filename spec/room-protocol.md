@@ -2,7 +2,7 @@
 
 - 版本：1.0（murmuration MVP）
 - 来源：5台异构机器约11天真实联邦运行（2026-10-22至2026-11-02）的提炼；协议本体历经v1.0→v1.4四次补丁，每条规则都有实测或事故背书
-- 配套：[交付协议](handoff-manifest.md) · [架构](../docs/01-architecture.md) · [岗位体系](../docs/02-roles.md) · [值守节律](../docs/04-watchkeeping.md)
+- 配套：[交付协议](handoff-manifest.md) · [架构](../docs/01-architecture.md) · [岗位体系](../docs/02-roles.md) · [值守节律](../docs/04-watchkeeping.md) · 临时双机聊天室扩展：[dsh-rooms](../docs/08-dsh-rooms.md)
 
 ## 1. 定位
 

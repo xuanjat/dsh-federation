@@ -68,12 +68,25 @@ In an agent federation the scarce resource is not bandwidth but the **context wi
 
 Full mechanism→literature lineage, the formal cost model, and an alignment table against the MAST failure taxonomy of LLM multi-agent systems: [docs/07-transport-model.md](docs/07-transport-model.md).
 
+## Ephemeral two-party rooms: dsh-rooms
+
+The persistent room handles **asynchronous, organization-level coordination**. When two machines need a tight multi-minute loop — joint debugging, file transfer with live confirmation, task relay — an all-hands channel is noise and has no "conversation over" semantics. dsh-rooms fills the other half: **temporary chat rooms between two instances** —
+
+- **Full lifecycle**: open (idempotent by request-id) → messages/files/tasks (deduplicating item ids; stored/acked/rejected three-state confirmation, where ack means the receiver's ledger has been fsynced) → explicit `end` (a single-side end can still receive) → a hard-deadline TTL (default 4h, cap 24h) force-closed by a cron sweep; rooms never resurrect — resuming opens a NEW room that transfers task state only;
+- **Relay stores no content**: one coordination machine forwards over the existing ssh link with `restrict,command` keys; envelopes are deleted right after ack; relay logs hold only ids and counts; communication records live solely in **each endpoint's local dedicated-session ledger** (roomledger.jsonl + roomfiles/);
+- **Strict auth**: one-time per-machine secret-hash registration; every call carries a signed envelope (±300s window + nonce anti-replay); forged name → BAD_SIG, non-party → NOT_PARTY, replay → REPLAY;
+- **Out-of-band chunked files**: 4MiB chunks with per-chunk sha256 plus whole-file sha256 at both ends, streaming through the relay, configurable caps (512MiB/file, 1GiB spool, 8 concurrent rooms);
+- **Zero new resident infrastructure**: one process per call (handbook.mjs pattern) plus a cron sweep — no new protocol stack, database, message queue, or open port.
+
+Design and acceptance: [docs/08-dsh-rooms.md](docs/08-dsh-rooms.md) (all 7 scenarios pass: replay/forgery/non-party rejection, a 768KB file in 3 sha-matched chunks, single/both-end semantics, TTL force close, relay-restart epoch reset, zero content residue after close). Deployed on the 5-machine federation 2026-11-13, with the first real cross-machine message delivered, acked, and closed that day.
+
 ## Repository layout
 
 ```
 spec/         room protocol, handoff manifest (normative)
 docs/         architecture, roles, governance, watchkeeping, onboarding, lessons,
-              transport model (mechanism-literature lineage + cost model)
+              transport model (mechanism-literature lineage + cost model),
+              ephemeral two-party rooms (dsh-rooms)
 docs/research novelty assessment: comparison matrix, claim ladder, adversarial review
 docs/experiments/ablation-results   controlled A0-vs-A1 ablation run (same-window latin square, data + figures)
 templates/    AGENTS.md / HANDBOOK.md / room init / red-line list templates
@@ -97,7 +110,7 @@ Controlled ablation (same-window Latin square, A0 single-session vs A1 room-fede
 
 ## Case study (sanitized)
 
-2026-10-22 → 11-02, five heterogeneous machines ran this method: the protocol evolved through 4 backward-compatible minor versions in 10 days; 8 role types with multi-role machines; a 4-volume shared handbook iterated to v2.1.2 with 45 cross-machine lessons and 13 archived incidents; watch cadence institutionalized; multi-thousand-file deliveries completed with per-file sha256 verification; a post-window controlled ablation (A0 vs A1, same-window Latin square, n=3) showed the federation arm at −34% makespan with 3× lower variance. See [case-study/timeline.md](case-study/timeline.md).
+2026-10-22 → 11-02, five heterogeneous machines ran this method: the protocol evolved through 4 backward-compatible minor versions in 10 days; 8 role types with multi-role machines; a 4-volume shared handbook iterated to v2.1.2 with 45 cross-machine lessons and 13 archived incidents; watch cadence institutionalized; multi-thousand-file deliveries completed with per-file sha256 verification; a post-window controlled ablation (A0 vs A1, same-window Latin square, n=3) showed the federation arm at −34% makespan with 3× lower variance. On 2026-11-13 the federation added dsh-rooms ephemeral two-party rooms (tight machine-to-machine relay with zero content stored at the relay) and closed its first real cross-machine message. See [case-study/timeline.md](case-study/timeline.md).
 
 ## Relation to single-machine teams and platform schemes
 
@@ -112,7 +125,7 @@ Per our search (2026-11): every individual mechanism has prior art; the nearest 
 
 - **v0.1 (current)** — method framework (spec/docs/templates) + reference tool + sanitized case study
 - **v0.2 (source landed, pending install validation)** — a DSH plugin bundle (`fed_room_scan`, `fed_room_post`, `fed_cursor`, `fed_handoff_verify`, `fed_ack_board`; zero-dependency, logic smoke-tested) → [tools/plugin/](tools/plugin/); submission-grade short-paper draft → [paper/](paper/)
-- **v0.3+** — full English docs, more onboarding records, protocol v2 explorations (server-side dedup, permission isolation)
+- **v0.3+** — full English docs, more onboarding records, protocol v2 explorations (server-side dedup, permission isolation), wider rollout of the dsh-rooms ephemeral chat ([docs/08-dsh-rooms.md](docs/08-dsh-rooms.md))
 
 ## License & disclaimers
 

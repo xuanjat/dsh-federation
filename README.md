@@ -74,13 +74,25 @@ agent联邦的稀缺资源不是带宽，而是**上下文窗口**（长上下�
 
 机制—学术谱系—成本模型的完整推导见 [docs/07-transport-model.md](docs/07-transport-model.md)（含与LLM-MAS失败taxonomy MAST的对位）。
 
+## 临时聊天室：dsh-rooms（两机紧耦合接力）
+
+常驻房间解决**组织级异步协调**；当两台机器需要几分钟级紧密往复（联合调试、边传文件边确认、任务接力）时，全员频道是噪声且没有"会话结束"语义。dsh-rooms补上另一半：**两台实例之间的临时聊天室**——
+
+- **生命周期完整**：建房（幂等request-id）→消息/文件/任务收发（item id去重，stored/acked/rejected三态确认，ack以对端账本fsync为准）→显式end（单方end仍可收）→硬截止TTL（默认4h上限24h）到点cron强关，旧房永不复活，续聊用resume开新房转交任务状态；
+- **中转零存正文**：一台协调机经既有ssh链路+`restrict,command`限制键只做转发，信封在ack后立即删除，日志只有id与计数；通信记录只落在**双方本地专用会话账本**（roomledger.jsonl+roomfiles/）；
+- **鉴权强校验**：每机一次性注册secret哈希，每次调用带签名信封（±300s时间窗+nonce防重放）；冒名→BAD_SIG，非当事方→NOT_PARTY，重放→REPLAY；
+- **文件带外分块**：4MiB分块逐块sha256+整文件双端sha256，流式中转，限额可配（512MiB/文件、1GiB spool、8并发房）；
+- **零新增常驻设施**：每调用一个进程（同handbook.mjs模式）+cron清扫，无新协议栈/数据库/消息队列/端口。
+
+设计与验收详见 [docs/08-dsh-rooms.md](docs/08-dsh-rooms.md)（7场景全过：重放/冒名/非当事方拒绝、768KB文件3块分片sha一致、单双方end语义、TTL强关、中转重启epoch清空、关房后零正文残留）。2026-11-13在5机联邦完成部署并联调通过首条真实跨机消息。
+
 ## 仓库结构
 
 ```
 murmuration/
 ├── README.md / README.en.md     你在这里
 ├── spec/                        房间协议、交付协议（机器可依循的规范）
-├── docs/                        架构 / 岗位 / 治理 / 值守 / 接入 / 教训 / 传输模型(学术谱系+成本模型)
+├── docs/                        架构 / 岗位 / 治理 / 值守 / 接入 / 教训 / 传输模型(学术谱系+成本模型) / 临时聊天室(dsh-rooms)
 │   ├── research/                新颖性评估：对标矩阵、主张阶梯、反方审查、检索日志
 │   └── experiments/ablation-results/  A0 vs A1受控消融实测（同窗拉丁方，数据+图件）
 ├── templates/                   AGENTS.md / HANDBOOK.md / 房间初始化 / 红线清单模板
@@ -103,7 +115,7 @@ murmuration/
 
 ## 案例摘要（脱敏）
 
-2026-10-22至11-02，5台异构机器（Windows工作站 / 云端服务器 / 局域网服务器 / 宿舍机 / 无外网机）按本方法组成联邦：协议10天演化4个小版本；8类岗位、一机多岗普遍；四卷共享手册迭代至v2.1.2，45条跨机经验、13起归档事故；值守从"有事才看"制度化为白天每小时/夜间每2小时；期间完成多笔上千文件级交付（逐文件sha256校验）；收窗后补做受控消融（A0单会话 vs A1联邦，同窗拉丁方n=3）：联邦臂makespan −34%、方差低3倍。详见 [case-study/timeline.md](case-study/timeline.md)。
+2026-10-22至11-02，5台异构机器（Windows工作站 / 云端服务器 / 局域网服务器 / 宿舍机 / 无外网机）按本方法组成联邦：协议10天演化4个小版本；8类岗位、一机多岗普遍；四卷共享手册迭代至v2.1.2，45条跨机经验、13起归档事故；值守从"有事才看"制度化为白天每小时/夜间每2小时；期间完成多笔上千文件级交付（逐文件sha256校验）；收窗后补做受控消融（A0单会话 vs A1联邦，同窗拉丁方n=3）：联邦臂makespan −34%、方差低3倍。2026-11-13，联邦增补dsh-rooms临时聊天室（两机紧耦合接力、中转零存正文）并完成首条真实跨机消息联调。详见 [case-study/timeline.md](case-study/timeline.md)。
 
 ## 与单机团队机制和平台方案的关系
 
@@ -118,7 +130,7 @@ murmuration/
 
 - **v0.1（当前）**：方法框架（spec/docs/templates）+ 参考工具 + 脱敏案例
 - **v0.2（源码已落地，待安装验证）**：DSH插件bundle（fed_room_scan / fed_room_post / fed_cursor / fed_handoff_verify / fed_ack_board，零依赖+逻辑冒烟测试通过）→ [tools/plugin/](tools/plugin/)；投稿级短文草稿 → [paper/](paper/)
-- **v0.3+**：英文全量文档、更多环境的接入记录、协议v2（服务端去重与权限隔离探索）
+- **v0.3+**：英文全量文档、更多环境的接入记录、协议v2（服务端去重与权限隔离探索）、dsh-rooms临时聊天室实测推广（[docs/08-dsh-rooms.md](docs/08-dsh-rooms.md)）
 
 ## 许可与声明
 
